@@ -16,4 +16,7 @@ class Hudson(object):
 
 
     def __nonzero__(self):
-        return self.complete and self.success and self.clean_pylint and self.good_coverage 
+        return (self.complete 
+                and self.success 
+                and self.clean_pylint 
+                and self.good_coverage)

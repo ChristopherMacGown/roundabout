@@ -30,10 +30,9 @@ class GithubScraperTestCase(unittest.TestCase):
             self.pull_request = f.read()
 
     def test_parse_pull_requests(self):
-        expected = {'https://github.com/ChristopherMacGown/roundabout/pull/2':
-{'commits': ['e17e2a07a94724f675e99d670d98b87431883fd7'], 'remote_name':
-'larsbutler', 'remote_branch': 'master', 'remote_url':
-'https://larsbutler@github.com/larsbutler/roundabout.git'}}
+        # TODO(chris): Mock the connection to GH so we don't end up getting 
+        # stuff from live instead of the test data
+        expected = {'https://github.com/ChristopherMacGown/roundabout/pull/2': {'commits': ['e17e2a07a94724f675e99d670d98b87431883fd7', '93e19157354d5107b65e9f9292d41a6a10528bd3', 'f732094b25e9a3e67dfb5da360c17771dfd28ca5', '0be6240672416367581dcea1f9abb2b5ba470d75'], 'remote_name': 'larsbutler', 'remote_branch': 'master', 'remote_url': 'https://ChristopherMacGown@github.com/larsbutler/roundabout.git'}}
         self.assertEqual(expected, scraper.parse_pull_requests(
             self.pull_requests))
 

@@ -1,7 +1,7 @@
 """ Roundabout is a tarmac style merge bot for github """
 
 from roundabout.git import Git
-from roundabout.github import Client
+from roundabout.github.client import Client
 from roundabout.hudson import Hudson
 
 

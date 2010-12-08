@@ -1,10 +1,10 @@
 """ A borg style github client """
 
 from __future__ import absolute_import
+import re
 from github2.client import Github
 from roundabout.config import Config
 from roundabout.github.scraper import GithubScraper, parse_pull_requests
-
 
 class Client(object):
     """ A borg style github client """
@@ -37,7 +37,8 @@ class Client(object):
         """
         url = "https://github.com/%s/pulls" % self.config.github_repo
         with GithubScraper(url) as response: 
-            return [pull_request 
-                    for pull_requests 
-                    in parse_pull_requests(response.read())
-                    if LGTM_RE.match(pull_request['comment_text'])]
+            return parse_pull_requests(response.read())
+            # return [pull_request 
+            #         for pull_requests 
+            #         in parse_pull_requests(response.read())
+            #         if LGTM_RE.match(pull_request['comment_text'])]

@@ -31,11 +31,15 @@ class GithubScraperTestCase(unittest.TestCase):
 
     def test_parse_pull_requests(self):
         expected = {'https://github.com/ChristopherMacGown/roundabout/pull/2':
-                    ['e17e2a07a94724f675e99d670d98b87431883fd7']}
+{'commits': ['e17e2a07a94724f675e99d670d98b87431883fd7'], 'remote_name':
+'larsbutler', 'remote_branch': 'master', 'remote_url':
+'https://larsbutler@github.com/larsbutler/roundabout.git'}}
         self.assertEqual(expected, scraper.parse_pull_requests(
             self.pull_requests))
 
-    def test_parse_pull_request_commits(self):
-        expected = ['e17e2a07a94724f675e99d670d98b87431883fd7']
-        self.assertEqual(expected, scraper.parse_pull_request_commits(
+    def test_parse_pull_request_page(self):
+        expected = {'commits': ['e17e2a07a94724f675e99d670d98b87431883fd7'],
+'remote_name': 'larsbutler', 'remote_branch': 'master', 'remote_url':
+'https://ChristopherMacGown@github.com/larsbutler/roundabout.git'}
+        self.assertEqual(expected, scraper.parse_pull_request_page(
             self.pull_request))

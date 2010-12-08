@@ -2,7 +2,7 @@
 
 from __future__ import absolute_import
 import git
-
+from roundabout.config import Config
 
 class Git(object):
     """ Roundabout git package proxy """ 
@@ -24,18 +24,3 @@ class Git(object):
         self.repo.delete_head(self.local_branch_name)
 
 
-with Git(remote_name, remote_url, remote_branch) as git:
-    try:
-        git.repo.git.execute(('git', 'merge', 'master')) # Merge in master
-    except git.exc.GitCommandError, e:
-        raise
-
-    git.repo.remote('origin').push(git.local_branch_name)
-    hudson_result = Hudson.spawn_job(git.local_branch_name)
-    while not hudson_result:
-        sleep(30)
-
-    if hudson_result.success():
-        # merge into master
-    
-    # reject

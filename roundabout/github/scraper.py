@@ -34,15 +34,23 @@ def parse_pull_requests(html):
                 path = link[2] # (element, 'href', path, position)
                 if PULL_REQUEST_RE.match(path) and not requests.get(path, None):
                     with GithubScraper(path) as res: 
-                        requests[path] = parse_pull_request_commits(res.read())
+                        requests[path] = parse_pull_request_page(res.read())
     return requests
 
 
-def parse_pull_request_commits(html):
+def parse_pull_request_page(html):
     """ Parse the pull request page, returning a list of URLs to the commits """
     doc = lxml.html.document_fromstring(html)
     doc.make_links_absolute(GITHUB_BASE_HREF)
-    commits = doc.find_class('commits')[0]
+    commits = __parse_commits(doc.find_class('commits')[0])
+    remote_name, remote_branch = __parse_pull_desc(doc.find_class('pull-description')[0])
+    remote_url = __parse_remote_url(doc.find_class('help-steps')[0])
+    return {'commits': commits, 
+            'remote_name': remote_name,
+            'remote_branch': remote_branch,
+            'remote_url': remote_url}
+
+def __parse_commits(commits):    
     commit_hashes = []
 
     for commit in commits:
@@ -54,6 +62,13 @@ def parse_pull_request_commits(html):
 
     return commit_hashes
 
+def __parse_pull_desc(desc):
+    cr_from = desc.find_class('commit-ref from')[0].text_content()
+    return cr_from.split(':')
+    
+def __parse_remote_url(help_steps):
+    ct = help_steps.find_class('copyable-terminal')[1]
+    return ct.text_content().split()[2]
 
 class GithubScraper(object): #pylint: disable=R0903
     

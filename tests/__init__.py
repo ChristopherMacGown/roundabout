@@ -1,1 +1,1 @@
-from tests.github_unittest import GithubClientTestCase
+from tests.github_unittest import GithubClientTestCase, GithubScraperTestCase

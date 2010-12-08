@@ -37,4 +37,7 @@ class Client(object):
         """
         url = "https://github.com/%s/pulls" % self.config.github_repo
         with GithubScraper(url) as response: 
-            return parse_pull_requests(response.read())
+            return [pull_request 
+                    for pull_requests 
+                    in parse_pull_requests(response.read())
+                    if LGTM_RE.match(pull_request['comment_text'])]

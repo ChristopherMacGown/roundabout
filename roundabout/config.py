@@ -1,21 +1,21 @@
-"""
-   Copyright 2010 Christopher MacGown
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-"""
+#   Copyright 2010 Christopher MacGown
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
 # -*- coding: utf-8 -*-
 
+
 """ roundabout config singleton """
+
 
 def parse_config_yaml(cfg):
     """ Lazy load yaml and try to load a configuration """
@@ -53,7 +53,7 @@ class Config(object):
                          "~/.roundabout.cfg")     # Are we running as a user?
     __shared_state__ = {}
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, config_files=__default_configs): #pylint: disable=W0613
         self = object.__new__(cls)
         self.__dict__ = cls.__shared_state__
         return self

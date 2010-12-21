@@ -12,7 +12,29 @@ from roundabout.config import Config
 GITHUB_BASE_HREF = "https://github.com"
 PULL_REQUEST_RE = re.compile("%s(.*)/pull/\d+" % GITHUB_BASE_HREF)
 COMMIT_RE = re.compile("%s(.*)/commit/(.*)" % GITHUB_BASE_HREF)
+LGTM_RE = re.compile("^%s$" % Config().default_lgtm)
 
+
+class PullRequest(object):
+    """ A single pull request """
+    def __init__(self, commits, comments, remote_name, remote_branch, remote_url):
+        self.commits = commits 
+        self.comments = comments
+        self.remote_name = remote_name
+        self.remote_branch = remote_branch
+        self.remote_url = remote_url
+
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def lgtm(self, approvers):
+        return True
+        for c in self.comments:
+            if c['author'] in approvers and LGTM_RE.match(c['body']):
+                return True
 
 def parse_pull_requests(html):
     """ Scrape the pull requests page for requests and then build a list
@@ -26,10 +48,6 @@ def parse_pull_requests(html):
 
     for listing in listings:
         for child in listing.getchildren():
-            # TODO(chris): Add comment parsing to this scraper function. 
-            # PROTO(chris): [c.text() 
-            #                for c in child.getchildren
-            #                if c.class == 'comment' or something]
             for link in child.iterlinks():
                 path = link[2] # (element, 'href', path, position)
                 if PULL_REQUEST_RE.match(path) and not requests.get(path, None):
@@ -43,12 +61,10 @@ def parse_pull_request_page(html):
     doc = lxml.html.document_fromstring(html)
     doc.make_links_absolute(GITHUB_BASE_HREF)
     commits = __parse_commits(doc.find_class('commits')[0])
+    comments = __parse_comments(doc.find_class('comments-wrapper')[0])
     remote_name, remote_branch = __parse_pull_desc(doc.find_class('pull-description')[0])
     remote_url = __parse_remote_url(doc.find_class('help-steps')[0])
-    return {'commits': commits, 
-            'remote_name': remote_name,
-            'remote_branch': remote_branch,
-            'remote_url': remote_url}
+    return PullRequest(commits, comments, remote_name, remote_branch, remote_url)
 
 def __parse_commits(commits):    
     commit_hashes = []
@@ -61,6 +77,17 @@ def __parse_commits(commits):
                 commit_hashes.append(sha1)
 
     return commit_hashes
+
+def __parse_comments(comments_wrapper):
+    comments = []
+    for comment in comments_wrapper.find_class("comment normal-comment"):
+        cmeta_author = comment.find_class("cmeta")[0].find_class("author")[0]
+        cbody = comment.find_class("body")[0]
+        author = cmeta_author.find("strong").text_content()
+        body = cbody.find_class("content-body")[0].text_content().strip()
+        comments.append({'author': author, 'body': body})
+
+    return comments
 
 def __parse_pull_desc(desc):
     cr_from = desc.find_class('commit-ref from')[0].text_content()

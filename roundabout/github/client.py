@@ -21,6 +21,35 @@ class Client(object):
                              api_token=config.github_api_token,
                              requests_per_second=config.github_req_per_second)
 
+    def _get(self, *args):
+        return self.github.request.get(*args)
+
+
+    @property
+    def approvers(self):
+        core_team = self.config.github_core_team
+        try:
+            return [user['name'] for user in self.teams[core_team]['users']]
+        except KeyError:
+            return []
+
+    @property
+    def teams(self):
+        """ Queries github for an organization's teams and returns a dict with
+        the team and its members
+        """
+        teams_with_members = {}
+        teams = self._get('organizations', self.organization, "teams")['teams']
+
+        for team in teams:
+            team.update(self._get("teams", str(team['id']), "members"))
+            teams_with_members[team['name']] = team
+        return teams_with_members
+
+    @property
+    def organization(self):
+        return self.config.github_organization
+
     @property
     def issues(self):
         """ return the list of issues from the repo """
@@ -38,7 +67,3 @@ class Client(object):
         url = "https://github.com/%s/pulls" % self.config.github_repo
         with GithubScraper(url) as response: 
             return parse_pull_requests(response.read())
-            # return [pull_request 
-            #         for pull_requests 
-            #         in parse_pull_requests(response.read())
-            #         if LGTM_RE.match(pull_request['comment_text'])]

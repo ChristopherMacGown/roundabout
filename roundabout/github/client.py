@@ -4,7 +4,6 @@ from __future__ import absolute_import
 import re
 from github2.client import Github
 from roundabout.config import Config
-from roundabout.github.scraper import GithubScraper, parse_pull_requests
 
 class Client(object):
     """ A borg style github client """
@@ -62,8 +61,5 @@ class Client(object):
 
     @property
     def pull_requests(self):
-        """ Use the scraper to grab any pull requests and their commit hashes. 
-        """
-        url = "https://github.com/%s/pulls" % self.config.github_repo
-        with GithubScraper(url) as response: 
-            return parse_pull_requests(response.read())
+        """ Return the list of pull_requests from the repo. """
+        return self.github.pull_requests.list(self.config.github_repo)

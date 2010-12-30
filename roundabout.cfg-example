@@ -1,9 +1,18 @@
 ---
 default:
-    cookie_file: "/tmp/roundabout-BXh5Qq"
+    lgtm: "lgtm"
 github:
+    organization: "YOUR ORG"
+    core_team: "YOUR CORE TEAM"
     repo: "YOUR_GITHUB_ACCOUNT/YOUR_REPO"
     req_per_second: 1
     username: "YOUR GITHUB USERNAME"
-    passwd: "YOUR GITHUB PASSWORD" # this is only required for private repos
     api_token: "YOUR GITHUB API TOKEN"
+git:
+    base_repo_url: "BASE REPO URL"
+    local_repo_path: "/tmp/repos/roundabout"
+hudson:
+    base_url: "YOUR HUDSON INSTANCE"
+    job: "JOB"
+    username: "HUDSON USERNAME"
+    password: "HUDSON PASSWORD"

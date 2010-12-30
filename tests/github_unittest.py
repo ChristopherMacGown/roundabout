@@ -69,7 +69,7 @@ class GithubScraperTestCase(unittest.TestCase):
         remote_branch = 'master'
         remote_url ='https://ChristopherMacGown@github.com/larsbutler/roundabout.git'
         expected = scraper.PullRequest(commits, comments, remote_name,
-                remote_branch, remote_url)
+            remote_branch, remote_url)
 
         self.assertEqual(expected, scraper.parse_pull_request_page(
             self.pull_request))

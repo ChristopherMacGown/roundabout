@@ -102,8 +102,6 @@ class GithubScraper(object): #pylint: disable=R0903
     """ A class that wraps urllib2 and cookielib to provide 
     __enter__/__exit__ """
 
-
-
     def __init__(self, url, config=Config()):
         self.config = config
         self.cookie_jar, self.opener = self._load_cookie_handler()

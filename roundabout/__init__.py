@@ -4,7 +4,7 @@ import sys
 import time
 from roundabout.git import Git
 from roundabout.github.client import Client
-from roundabout.hudson import Hudson
+from roundabout.hudson import Job
 
 
 class Roundabout(object):
@@ -41,14 +41,15 @@ class Roundabout(object):
                         raise
 
                     git.push(git.local_branch_name)
-                    hudson_result = Hudson.spawn_job(git.local_branch_name)
-                    while not hudson_result.complete:
+                    build = Job.spawn_build(git.local_branch_name)
+                    while not build.complete:
                         time.sleep(30)
+                        build.reload()
 
                     # return to master
                     git.branch('master').checkout()
 
-                    if hudson_result: 
+                    if build:
                         # Successful build, good coverage, and clean pylint.
                         git.merge(git.local_branch_name)
                         git.push('master')

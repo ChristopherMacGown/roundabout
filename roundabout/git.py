@@ -40,6 +40,7 @@ class Git(object):
         self.repo.delete_head(self.local_branch_name)
 
     def branch(self, branch):
+        """ Return the head object referenced by the branch name """
         return [b for b in self.repo.branches if branch == b.name][0]
 
     def merge(self, branch):

@@ -7,16 +7,17 @@ from urlparse import urlparse
 from roundabout.config import Config
 
 class Job(object):
-    def __init__(self, config=Config()):
+    def __init__(self, config=Config(), opener=None):
         self.config = config
         self.url = "%s/job/%s/api/json?depth=1" % (config.hudson_base_url,
                                                    config.hudson_job)
 
         self.build_url = "%s/job/%s/buildWithParameters?branch=%s"
+        self.opener = opener or urllib2.urlopen # Use a test opener or urllib2
 
     @classmethod
-    def spawn_build(cls, branch):
-        job = cls()
+    def spawn_build(cls, branch, opener=None):
+        job = cls(opener=opener)
         if job.req(job.build_url % (job.config.hudson_base_url,
                                     job.config.hudson_job, branch)):
             build_id = job.properties['nextBuildNumber']
@@ -44,7 +45,7 @@ class Job(object):
         b64string = base64.encodestring("%s:%s" % (username, password))[:-1]
         req = urllib2.Request(url)
         req.add_header("Authorization", "Basic %s" % b64string)
-        res = urllib2.urlopen(req)
+        res = self.opener(req)
         
         if json_decode:
             res = json.JSONDecoder().decode(res.read())

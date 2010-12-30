@@ -1,3 +1,4 @@
+import json
 import unittest
 from roundabout.config import Config
 from roundabout.hudson import Job
@@ -10,9 +11,18 @@ class HudsonTestCase(unittest.TestCase):
     def teardown(self):
         utils.reset_config()
 
-    #def test_get_spawn_build(self):
-    #    job = Job.spawn_build('test_branch')
-    #    self.assertTrue(job.number)
+    def test_get_spawn_build(self):
+        class FakeHudson(object):
+            def __init__(self, *args):
+                self.expected = {'nextBuildNumber': 10,
+                                 'builds': [
+                                     {'number': 10}
+                                  ]}
+            def read(self):
+                return json.JSONEncoder().encode(self.expected)
+        
+        job = Job.spawn_build('test_branch', opener=FakeHudson)
+        self.assertTrue(job.number)
 
     def test_get_job_data(self):
         job = Job()

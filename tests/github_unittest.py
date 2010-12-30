@@ -26,3 +26,7 @@ class GithubClientTestCase(unittest.TestCase):
 
     def test_github_approvers(self):
         self.assertTrue(u'Lars Butler' in self.client.approvers)
+
+    def test_github_approvers_with_bad_coreteam(self):
+        self.client.config.github_core_team = "fake team"
+        self.assertEqual([], self.client.approvers)

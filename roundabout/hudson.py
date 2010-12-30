@@ -28,8 +28,10 @@ class Job(object):
                                   in job.builds 
                                   if build_id == build.number][0]
                 except IndexError:
-                    time.sleep(1)
-                    pass
+                    if opener:
+                        raise
+                    else:
+                        time.sleep(1)
 
     @property
     def properties(self):
@@ -55,8 +57,8 @@ class Job(object):
 
 class Build(object):
     def __init__(self, job, b_dict):
-        self.job = job
         self.__dict__ = b_dict
+        self.job = job
 
     def __nonzero__(self):
         return self.complete and self.success
@@ -70,5 +72,6 @@ class Build(object):
         return self.result == 'SUCCESS'
 
     def reload(self):
-        self.__dict__ = [b for b in job.builds if b.number == self.number][0]
-
+        print self.job
+        self.__dict__ = [b.__dict__ for b in self.job.builds if b.number == self.number][0]
+        return self

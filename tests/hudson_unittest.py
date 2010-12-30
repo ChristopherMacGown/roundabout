@@ -24,6 +24,16 @@ class HudsonTestCase(unittest.TestCase):
         job = Job.spawn_build('test_branch', opener=FakeHudson)
         self.assertTrue(job.number)
 
+    def test_get_spawn_build_gets_into_the_sleep(self):
+        class FakeHudson(object):
+            def __init__(self, *args):
+                self.expected = {'nextBuildNumber': 10,
+                                 'builds': []}
+            def read(self):
+                return json.JSONEncoder().encode(self.expected)
+
+        self.assertRaises(IndexError, Job.spawn_build, 'test_branch', opener=FakeHudson)
+
     def test_get_job_data(self):
         job = Job()
         self.assertTrue(job.properties)
@@ -35,3 +45,4 @@ class HudsonTestCase(unittest.TestCase):
 
         self.assertFalse(build1)
         self.assertTrue(build2)
+        self.assertTrue(build2.reload())

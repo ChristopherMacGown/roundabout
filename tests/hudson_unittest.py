@@ -10,9 +10,6 @@ class HudsonTestCase(unittest.TestCase):
     def teardown(self):
         utils.reset_config()
 
-    def test_fail_this_for_hudson(self):
-        self.assertFalse(True)
-
     def test_get_spawn_build(self):
         job = Job.spawn_build('test_branch')
         self.assertTrue(job.number)

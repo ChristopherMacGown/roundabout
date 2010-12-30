@@ -1,9 +1,17 @@
 import unittest
+from roundabout.config import Config
 from roundabout.hudson import Job
+from tests import utils
 
 class HudsonTestCase(unittest.TestCase):
+    def setUp(self):
+        self.config = Config()
+
+    def teardown(self):
+        utils.reset_config()
+
     def test_fail_this_for_hudson(self):
-        self.asserFalse(True)
+        self.assertFalse(True)
 
     def test_get_spawn_build(self):
         job = Job.spawn_build('test_branch')

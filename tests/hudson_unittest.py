@@ -10,9 +10,9 @@ class HudsonTestCase(unittest.TestCase):
     def teardown(self):
         utils.reset_config()
 
-    def test_get_spawn_build(self):
-        job = Job.spawn_build('test_branch')
-        self.assertTrue(job.number)
+    #def test_get_spawn_build(self):
+    #    job = Job.spawn_build('test_branch')
+    #    self.assertTrue(job.number)
 
     def test_get_job_data(self):
         job = Job()

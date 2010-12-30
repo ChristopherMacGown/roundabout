@@ -49,4 +49,4 @@ class Git(object):
 
     def push(self, branch, remote='origin'):
         """ Push the branch up to the remote """
-        self.repo.remote(remote).push(branch)
+        return self.repo.remote(remote).push(branch)

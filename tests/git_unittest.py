@@ -48,6 +48,18 @@ class GitTestCase(unittest.TestCase):
             self.assertTrue(git.merge('master'))
             self.assertTrue(git.branch('master').checkout())
 
+    def test_push_with_good_config(self):
+        config = Config(config_files=[utils.testdata('good_git.cfg')])
+        remote_name = config.git_test_remote_name
+        remote_url = config.git_test_remote_url
+        remote_branch = config.git_test_remote_branch
+
+        repo = Git(remote_name=remote_name,
+                   remote_url=remote_url,
+                   remote_branch=remote_branch)
+
+        print repo.push("master")
+        self.assertTrue(repo.push('master'))
 
     def test_clone_repo_with_bad_config(self):
         config = Config(config_files=[utils.testdata('bad_git.cfg')])

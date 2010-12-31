@@ -72,6 +72,5 @@ class Build(object):
         return self.result == 'SUCCESS'
 
     def reload(self):
-        print self.job
         self.__dict__ = [b.__dict__ for b in self.job.builds if b.number == self.number][0]
         return self

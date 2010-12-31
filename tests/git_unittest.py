@@ -58,7 +58,6 @@ class GitTestCase(unittest.TestCase):
                    remote_url=remote_url,
                    remote_branch=remote_branch)
 
-        print repo.push("master")
         self.assertTrue(repo.push('master'))
 
     def test_clone_repo_with_bad_config(self):

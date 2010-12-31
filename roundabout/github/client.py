@@ -5,6 +5,8 @@ import re
 from github2.client import Github
 from roundabout.config import Config
 
+LGTM_RE = re.compile("^%s$" % Config().default_lgtm)
+
 class Client(object):
     """ A borg style github client """
     __shared_state = {}
@@ -23,6 +25,17 @@ class Client(object):
     def _get(self, *args):
         return self.github.request.get(*args)
 
+    def get_full_pull_request(self, pull_request):
+        def lgtm(pull_request, approvers):
+            def _lgtm(approvers):
+                for c in pull_request.discussion:
+                    if c['user']['login'] in approvers and LGTM_RE.match(c['body']):
+                        return True
+            return _lgtm
+
+        pull_request = self.github.pull_requests.show(self.config.github_repo, pull_request.number)
+        pull_request.lgtm = lgtm(pull_request, self.approvers)
+        return pull_request
 
     @property
     def approvers(self):
@@ -62,4 +75,5 @@ class Client(object):
     @property
     def pull_requests(self):
         """ Return the list of pull_requests from the repo. """
-        return self.github.pull_requests.list(self.config.github_repo)
+        return [self.get_full_pull_request(p) for p in 
+                self.github.pull_requests.list(self.config.github_repo)]

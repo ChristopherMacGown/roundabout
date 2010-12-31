@@ -17,12 +17,14 @@ class GithubClientTestCase(unittest.TestCase):
         self.assertFalse(self.client == local_client)
 
     def test_github_connection(self):
-        print Config.__shared_state__
         self.assertTrue(self.client.issues)
         self.assertTrue(self.client.branches)
 
     def test_github_pull_requests(self):
-        self.assertTrue(self.client.pull_requests)
+        #TODO(chris): Stub out github API so I can test that lgtm works without.
+        pull_requests = self.client.pull_requests
+        self.assertTrue(pull_requests)
+        self.assertFalse(pull_requests[0].lgtm(self.client.approvers))
 
     def test_github_approvers(self):
         self.assertTrue(u'Lars Butler' in self.client.approvers)

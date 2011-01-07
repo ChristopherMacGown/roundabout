@@ -59,3 +59,12 @@ class GithubClientTestCase(unittest.TestCase):
         comment = comment[0]
         
         self.assertEqual(comment_text, comment.body)
+
+    def test_reject(self):
+        test_pr_id = 1
+        reject_message = u'Merge failed'
+        # self.client.reject(pull_request_id)
+        # TODO(LB): need to mock up github here as well; see test_comment()
+        result = self.client.reject(test_pr_id, reject_message)
+
+        self.assertTrue(False) 

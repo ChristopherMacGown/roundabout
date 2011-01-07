@@ -1,3 +1,4 @@
 roundabout.cfg
+roundabout.log
 *.pyc
 .coverage

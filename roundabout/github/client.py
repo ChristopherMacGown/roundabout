@@ -25,6 +25,12 @@ class Client(object):
     def _get(self, *args):
         return self.github.request.get(*args)
 
+    def comment(self, issue_id, comment):
+        "Add a comment to the specified issue id"
+        return self.github.issues.comment(self.config.github_repo,
+                                                 issue_id,
+                                                 comment)
+    
     def get_full_pull_request(self, pull_request):
         def lgtm(pull_request, approvers):
             def _lgtm(approvers):

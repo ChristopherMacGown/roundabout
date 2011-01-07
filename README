@@ -1,1 +1,29 @@
-Lars frowns upon your shenanigans.
+Summary:
+
+Roundabout is a mergebot which integrates Github and Hudson to test and disposition pull requests from Github forks.
+
+Here is a simplified diagram of the workflow: http://popplet.com/app/#/11752
+
+
+
+Required packages:
+
+GitPython==0.3.1
+PyYAML==3.09
+async==0.6.1
+coverage==3.4
+distribute==0.6.14
+eventlet==0.9.12
+gitdb==0.5.2
+github2==0.2.0
+greenlet==0.3.1
+logilab-astng==0.21.0
+logilab-common==0.53.0
+lxml==2.3beta1
+nose==0.11.4
+pep8==0.6.1
+pylint==0.22.0
+unittest2==0.5.1
+virtualenv==1.5.1
+virtualenvwrapper==2.5.3
+wsgiref==0.1.2

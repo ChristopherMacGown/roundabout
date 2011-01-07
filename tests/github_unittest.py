@@ -6,6 +6,8 @@ from tests import utils
 
 
 class FakeGithub(object):
+    """ This fakes out the github2.Github
+    """
     def __init__(self, username=None, api_token=None, requests_per_second=None):
         self.expected_value = None
 
@@ -17,6 +19,8 @@ class FakeGithub(object):
 
 
 class StubbedGithub(Client):
+    """
+    """
     @property
     def teams(self):
         return utils.load(utils.testdata("teams.json"))
@@ -57,7 +61,8 @@ class GithubClientTestCase(unittest.TestCase):
         client.config.github_core_team = "test team 1"
         pull_requests = client.pull_requests
         self.assertTrue(pull_requests)
-        self.assertFalse(pull_requests[0]['lgtm'](client.approvers))
+        url, pull_request = pull_requests.items()[0]
+        self.assertFalse(pull_request['lgtm'](client.approvers))
 
     def test_github_approvers(self):
         client = StubbedGithub(config=Config(), conn_class=FakeGithub)

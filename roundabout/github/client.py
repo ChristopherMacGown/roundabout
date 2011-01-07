@@ -78,5 +78,7 @@ class Client(object):
     @property
     def pull_requests(self):
         """ Return the list of pull_requests from the repo. """
-        p_reqs = self._get("pulls", self.config.github_repo)['pulls']
-        return [self.get_full_pull_request(p) for p in p_reqs]
+        p_reqs = [self.get_full_pull_request(p) 
+                  for p
+                  in self._get("pulls", self.config.github_repo)['pulls']]
+        return dict([(p['html_url'], p) for p in p_reqs])

@@ -11,14 +11,14 @@ class Client(object):
     """ A borg style github client """
     __shared_state = {}
 
-    def __new__(cls, config=Config()): #pylint: disable=W0613
+    def __new__(cls, config=Config(), conn_class=Github): #pylint: disable=W0613
         self = object.__new__(cls)
         self.__dict__ = cls.__shared_state
         return self
 
-    def __init__(self, config=Config()):
+    def __init__(self, config=Config(), conn_class=Github):
         self.config = config
-        self.github = Github(username=config.github_username,
+        self.github = conn_class(username=config.github_username,
                              api_token=config.github_api_token,
                              requests_per_second=config.github_req_per_second)
 
@@ -28,13 +28,16 @@ class Client(object):
     def get_full_pull_request(self, pull_request):
         def lgtm(pull_request, approvers):
             def _lgtm(approvers):
-                for c in pull_request.discussion:
+                for c in pull_request['discussion']:
                     if c['user']['login'] in approvers and LGTM_RE.match(c['body']):
                         return True
             return _lgtm
 
-        pull_request = self.github.pull_requests.show(self.config.github_repo, pull_request.number)
-        pull_request.lgtm = lgtm(pull_request, self.approvers)
+        pull_request = self._get("pulls",
+                                 self.config.github_repo,
+                                 str(pull_request['number']))['pull']
+
+        pull_request['lgtm'] = lgtm(pull_request, self.approvers)
         return pull_request
 
     @property
@@ -75,5 +78,5 @@ class Client(object):
     @property
     def pull_requests(self):
         """ Return the list of pull_requests from the repo. """
-        return [self.get_full_pull_request(p) for p in 
-                self.github.pull_requests.list(self.config.github_repo)]
+        p_reqs = self._get("pulls", self.config.github_repo)['pulls']
+        return [self.get_full_pull_request(p) for p in p_reqs]

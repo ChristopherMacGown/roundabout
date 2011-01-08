@@ -1,6 +1,7 @@
 ---
 default:
     lgtm: "lgtm"
+    logfile: "roundabout.log"
 github:
     organization: "YOUR ORG"
     core_team: "YOUR CORE TEAM"

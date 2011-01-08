@@ -26,16 +26,25 @@ class Client(object):
         return self.github.request.get(*args)
 
     def comment(self, issue_id, message):
-        "Add a comment to the specified issue id"
+        """
+        Add a comment to the specified issue.
+        
+        Returns a dict representation of the comment.
+        """
         return self.github.issues.comment(self.config.github_repo,
                                                  issue_id,
                                                  message)
    
     def reject(self, pull_request_id, message):
+        """
+        Add a rejection reason (comment) to the specified pull request,
+        then close it.
+
+        Returns the closed Issue.
+        """
         self.comment(pull_request_id, message)
-        # TODO: close the issue/pull_request
-        
-        raise Exception("Not implemented yet")
+        return self.github.issues.close(self.config.github_repo,
+                                               pull_request_id)
      
     def get_full_pull_request(self, pull_request):
         def lgtm(pull_request, approvers):

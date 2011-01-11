@@ -5,6 +5,7 @@ import git
 import os
 import random
 import string
+from roundabout import log
 from roundabout.config import Config
 
 
@@ -53,8 +54,11 @@ class Git(object):
 
     def merge(self, branch):
         """ Merge the passed in branch with HEAD """
+
+        log.info("merging %s into %s" % (branch, self.repo.active_branch.name))
         return self.repo.git.execute(('git', 'merge', branch))
 
     def push(self, branch, remote='origin'):
         """ Push the branch up to the remote """
+        log.info("pushing %s to %s" % (branch, remote))
         return self.repo.remote(remote).push(branch)

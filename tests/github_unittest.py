@@ -68,7 +68,7 @@ class GithubClientTestCase(unittest.TestCase):
         pull_requests = client.pull_requests
         self.assertTrue(pull_requests)
         url, pull_request = pull_requests.items()[0]
-        self.assertFalse(pull_request['lgtm'](client.approvers))
+        self.assertFalse(pull_request.lgtm(client.approvers))
 
     def test_github_approvers(self):
         client = StubbedGithub(config=Config(), conn_class=FakeGithub)
@@ -92,12 +92,16 @@ class GithubClientTestCase(unittest.TestCase):
             def __init__(self, dictionary):
                 self.__dict__ = dictionary
 
+        client = StubbedGithub(config=Config(), conn_class=FakeGithub)
+        client.config.github_core_team = "test team 1"
+        pull_request = client.pull_requests.values()[0]
+
         test_issue_id = 12345
         comment_text = u'test comment text'
         
         # add the comment
         self.expect(utils.load(utils.testdata('comment.json')))
-        comment_result = self.client.comment(test_issue_id, comment_text)
+        comment_result = pull_request.comment(test_issue_id, comment_text)
     
         # now verify the comment was added 
         self.expect([Comment(x) for x 
@@ -136,6 +140,10 @@ class GithubClientTestCase(unittest.TestCase):
         self.assertEqual(u'open', issue.state)
         
         # TODO(LB): need to mock up github here as well; see test_comment()
+        client = StubbedGithub(config=Config(), conn_class=FakeGithub)
+        client.config.github_core_team = "test team 1"
+        pull_request = client.pull_requests.values()[0]
+
         self.expect(Issue(utils.load(utils.testdata('issue_closed.json'))['issue']))
-        rejected_issue = self.client.reject(test_pr_id, reject_message)
+        rejected_issue = pull_request.reject(test_pr_id, reject_message)
         self.assertEqual(u'closed', rejected_issue.state)

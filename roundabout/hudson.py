@@ -4,6 +4,7 @@ import time
 import urllib2
 from urlparse import urlparse
 
+from roundabout import log
 from roundabout.config import Config
 
 class Job(object):
@@ -14,10 +15,14 @@ class Job(object):
 
         self.build_url = "%s/job/%s/buildWithParameters?branch=%s"
         self.opener = opener or urllib2.urlopen # Use a test opener or urllib2
+        log.info("Build URL: %s" % self.url)
 
     @classmethod
     def spawn_build(cls, branch, opener=None):
         job = cls(opener=opener)
+        log.info("Starting hudson build on %s for %s" %
+                    (job.config.hudson_job, branch))
+
         if job.req(job.build_url % (job.config.hudson_base_url,
                                     job.config.hudson_job, branch)):
             build_id = job.properties['nextBuildNumber']

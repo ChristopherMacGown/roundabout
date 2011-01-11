@@ -21,7 +21,7 @@ class Roundabout(object):
             pull_requests = github.pull_requests
             pull_requests = [(u, p) for u, p
                                     in pull_requests.items()
-                                    if p['lgtm'](github.approvers)]
+                                    if p.lgtm(github.approvers)]
 
             if not pull_requests:
                 log.info("No work to do, sleeping.")
@@ -30,30 +30,22 @@ class Roundabout(object):
             for url, pull_request in pull_requests:
                 log.info("processing %s" % url)
 
-                remote_name = pull_request['head']['repository']['owner']
-                remote_url =  pull_request['head']['repository']['url'] + ".git"
-                remote_branch = pull_request['head']['ref']
-
-                repo = Git(remote_name=remote_name,
-                           remote_url=remote_url,
-                           remote_branch=remote_branch)
+                repo = Git(remote_name=pull_request.remote_name,
+                           remote_url=pull_request.remote_url,
+                           remote_branch=pull_request.remote_branch)
 
                 # Create a remote, fetch it, checkout the branch
 
                 with repo as git:
                     log.info("Cloning to %s" % repo.clonepath)
                     try:
-                        log.info("merging master into remote")
                         git.merge('master')
                     except git.exc.GitCommandError:
-                        log.info("Merge failed, rejecting %s" % url)
-                        github.reject("Merge failed, rejecting.")
+                        pull_request.reject("Merge failed, rejecting.")
                         continue
 
-                    log.info("Starting hudson job")
                     git.push(git.local_branch_name)
                     build = Job.spawn_build(git.local_branch_name)
-                    log.info("build: %s" % build.url)
                     while not build.complete:
                         log.info("Job not complete, sleeping for 30 seconds...")
                         time.sleep(30)
@@ -63,10 +55,9 @@ class Roundabout(object):
                     git.branch('master').checkout()
 
                     if build:
-                        log.info("Build successful, merging %s into master" % url)
+                        log.info("Build successful!")
                         # Successful build, good coverage, and clean pylint.
                         git.merge(git.local_branch_name)
                         git.push('master')
                     else:
-                        log.info("Build failed, rejecting %s" % url)
                         github.reject("Build failed, rejecting.")

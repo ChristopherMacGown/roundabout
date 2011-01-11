@@ -3,6 +3,7 @@
 from __future__ import absolute_import
 import re
 from github2.client import Github
+from roundabout import log
 from roundabout.config import Config
 
 LGTM_RE = re.compile("^%s$" % Config().default_lgtm)
@@ -24,42 +25,6 @@ class Client(object):
 
     def _get(self, *args):
         return self.github.request.get(*args)
-
-    def comment(self, issue_id, message):
-        """
-        Add a comment to the specified issue.
-        
-        Returns a dict representation of the comment.
-        """
-        return self.github.issues.comment(self.config.github_repo,
-                                                 issue_id,
-                                                 message)
-   
-    def reject(self, pull_request_id, message):
-        """
-        Add a rejection reason (comment) to the specified pull request,
-        then close it.
-
-        Returns the closed Issue.
-        """
-        self.comment(pull_request_id, message)
-        return self.github.issues.close(self.config.github_repo,
-                                               pull_request_id)
-     
-    def get_full_pull_request(self, pull_request):
-        def lgtm(pull_request, approvers):
-            def _lgtm(approvers):
-                for c in pull_request['discussion']:
-                    if c['user']['login'] in approvers and LGTM_RE.match(c.get('body', "")):
-                        return True
-            return _lgtm
-
-        pull_request = self._get("pulls",
-                                 self.config.github_repo,
-                                 str(pull_request['number']))['pull']
-
-        pull_request['lgtm'] = lgtm(pull_request, self.approvers)
-        return pull_request
 
     @property
     def approvers(self):
@@ -99,7 +64,71 @@ class Client(object):
     @property
     def pull_requests(self):
         """ Return the list of pull_requests from the repo. """
-        p_reqs = [self.get_full_pull_request(p) 
+        p_reqs = [PullRequest(self, p)
                   for p
                   in self._get("pulls", self.config.github_repo)['pulls']]
-        return dict([(p['html_url'], p) for p in p_reqs])
+        return dict([(p.html_url, p) for p in p_reqs])
+
+
+class PullRequest(object):
+    """ A github pull request """
+    def __init__(self, client, pull_request):
+        """ Take a pull_request dict from github, and builds a PullRequest """
+
+        self.__dict__ = pull_request
+        self.client = client
+
+        self.__dict__.update(self.__get_full_request())
+
+    @property
+    def remote_url(self):
+        return self.head['repository']['url'] + ".git"
+
+    @property
+    def remote_name(self):
+        return self.head['repository']['owner']
+
+    @property
+    def remote_branch(self):
+        return self.head['ref']
+
+    def lgtm(self, approvers):
+        """ Takes a list of approvers and checks if any of the approvers have
+            "lgtmed" the request. Returns true if so, None otherwise. """
+
+        for comment in self.discussion:
+            if comment['user']['login'] in approvers and LGTM_RE.match(comment.get('body', "")):
+                return True
+
+
+    def __get_full_request(self):
+        """ Return a dict of the complete pull_request data from the github api
+            for a single pull_request. """
+
+        print self.client
+        return self.client._get("pulls",
+                                self.client.config.github_repo,
+                                str(self.number))['pull']
+
+    def comment(self, issue_id, message):
+        """
+        Add a comment to the specified issue.
+
+        Returns a dict representation of the comment.
+        """
+        log.info("commenting on %s: %s" % (issue_id, message))
+        return self.client.github.issues.comment(self.client.config.github_repo,
+                                                 issue_id, message)
+
+    def reject(self, pull_request_id, message):
+        """
+        Add a rejection reason (comment) to the specified pull request,
+        then close it.
+
+        Returns the closed Issue.
+        """
+
+        log.info("Rejecting %s" % self.html_url)
+        self.comment(pull_request_id, message)
+        return self.client.github.issues.close(self.client.config.github_repo,
+                                               pull_request_id)

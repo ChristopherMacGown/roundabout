@@ -1,0 +1,9 @@
+{
+  "issue": { 
+    "position": 1.0,
+    "number": 1,
+    "user": "fake_user",
+    "labels": [],
+    "state": "closed"
+  }
+}

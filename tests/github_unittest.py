@@ -32,6 +32,7 @@ class StubbedGithub(Client):
             elif len(args) == 3: # PullRequest
                 return utils.load(utils.testdata("pull_request.json"))
 
+
 class GithubClientTestCase(unittest.TestCase):
     def setUp(self):
         utils.reset_config()
@@ -73,7 +74,7 @@ class GithubClientTestCase(unittest.TestCase):
 
     def test_github_approvers_with_bad_coreteam(self):
         self.client.config.github_core_team = "fake team"
-        self.client.github.expected_value = {"foo": "bar"}
+        self.expect({"foo": "bar"})
         self.assertEqual([], self.client.approvers)
 
     def test_comment(self):
@@ -82,13 +83,21 @@ class GithubClientTestCase(unittest.TestCase):
         TODO(LB): need to change the test setup so we're mocking the github 
         stuff for this (or else the tests run as slow as Chris's Mom).
         '''
-        test_issue_id = 1
+
+        class Comment(object):
+            def __init__(self, dictionary):
+                self.__dict__ = dictionary
+
+        test_issue_id = 12345
         comment_text = u'test comment text'
         
         # add the comment
+        self.expect(utils.load(utils.testdata('comment.json')))
         comment_result = self.client.comment(test_issue_id, comment_text)
     
         # now verify the comment was added 
+        self.expect([Comment(x) for x 
+            in utils.load(utils.testdata('comments.json'))["comments"]])
         comments = self.client.github.issues.comments(self.config.github_repo,
                                                             test_issue_id)
         
@@ -102,15 +111,20 @@ class GithubClientTestCase(unittest.TestCase):
         self.assertEqual(comment_text, comment.body)
 
     def test_reject(self):
+        class Issue(object):
+            def __init__(self, dictionary):
+                self.__dict__ = dictionary
+
         def _get_issue(issue_id):
             return self.client.github.issues.show(self.config.github_repo,
                                                   issue_id)
 
-        test_pr_id = 11 # TODO(LB): update me once we have mocked github + data
+        test_pr_id = 1
         reject_message = u'Merge failed'
 
         # TODO(LB): temporary -- repoen the pull request for this test
         # Remove this line once github mocking is in place
+        self.expect(Issue(utils.load(utils.testdata('issue_open.json'))['issue']))
         self.client.github.issues.reopen(self.config.github_repo,
                                          test_pr_id)
         # verify the issue is open
@@ -118,5 +132,6 @@ class GithubClientTestCase(unittest.TestCase):
         self.assertEqual(u'open', issue.state)
         
         # TODO(LB): need to mock up github here as well; see test_comment()
+        self.expect(Issue(utils.load(utils.testdata('issue_closed.json'))['issue']))
         rejected_issue = self.client.reject(test_pr_id, reject_message)
         self.assertEqual(u'closed', rejected_issue.state)

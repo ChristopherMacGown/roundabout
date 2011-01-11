@@ -50,7 +50,7 @@ class Client(object):
         def lgtm(pull_request, approvers):
             def _lgtm(approvers):
                 for c in pull_request['discussion']:
-                    if c['user']['login'] in approvers and LGTM_RE.match(c['body']):
+                    if c['user']['login'] in approvers and LGTM_RE.match(c.get('body', "")):
                         return True
             return _lgtm
 
@@ -65,7 +65,7 @@ class Client(object):
     def approvers(self):
         core_team = self.config.github_core_team
         try:
-            return [user['name'] for user in self.teams[core_team]['users']]
+            return [user['login'] for user in self.teams[core_team]['users']]
         except KeyError:
             return []
 

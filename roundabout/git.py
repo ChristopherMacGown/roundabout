@@ -20,24 +20,32 @@ class Git(object):
         self.remote_name = remote_name
         self.remote_url = remote_url
         self.local_branch_name = "merge_%s" % remote_branch
+        self.remote_branch = "remotes/%s/%s" % (remote_name, remote_branch)
         self.config = config
 
         clonename = "".join([random.choice(string.letters) for i in range(8)])
-        clonepath = os.path.join(config.git_local_repo_path, clonename)
+        self.clonepath = os.path.join(config.git_local_repo_path, clonename)
         try:
-            self.repo = git.Repo.clone_from(config.git_base_repo_url, clonepath)
+            self.repo = git.Repo.clone_from(config.git_base_repo_url,
+                                            self.clonepath)
         except git.GitCommandError, e:
             raise GitException(e)
 
     def __enter__(self):
-        self.repo.create_remote(self.remote_name, self.remote_url)
-        self.repo.create_head(self.local_branch_name)
-        self.branch(self.local_branch_name).checkout()
+        self.remote.fetch()
+        self.repo.git.checkout(self.remote_branch, b=self.local_branch_name)
         return self
 
     def __exit__(self, *args):
         self.repo.delete_remote(self.remote_name)
         self.repo.delete_head(self.local_branch_name)
+
+    @property
+    def remote(self):
+        self.repo.create_remote(self.remote_name, self.remote_url)
+        return [remote for remote
+                       in self.repo.remotes
+                       if remote.name == self.remote_name][0]
 
     def branch(self, branch):
         """ Return the head object referenced by the branch name """

@@ -16,7 +16,6 @@
 
 """ roundabout config singleton """
 
-
 def parse_config_yaml(cfg):
     """ Lazy load yaml and try to load a configuration """
 
@@ -60,7 +59,6 @@ class Config(object):
 
     def __init__(self, config_files=__default_configs):
         if not self.__dict__:
-            print "Assimilating your biological distinctiveness"
             for config_file in config_files:
                 self._parse_config_file(config_file)
 

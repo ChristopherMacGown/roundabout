@@ -1,3 +1,4 @@
+import time
 import unittest
 from roundabout.config import Config, ConfigError, parse_config_yaml, parse_config_json
 from tests import utils 
@@ -8,9 +9,11 @@ class ConfigTestCase(unittest.TestCase):
     _test_good_config_file = "tests/data/good.cfg"
 
     def setUp(self):
+        self.t = time.time()
         utils.reset_config()
 
-    def teardown(self):
+    def tearDown(self):
+        print "%s: %f" % (self.id(), time.time() - self.t)
         utils.reset_config()
 
     def test_yaml_config(self):

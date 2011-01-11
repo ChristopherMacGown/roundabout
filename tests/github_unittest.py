@@ -1,4 +1,5 @@
 import json
+import time
 import unittest
 from roundabout.config import Config
 from roundabout.github.client import Client
@@ -35,12 +36,14 @@ class StubbedGithub(Client):
 
 class GithubClientTestCase(unittest.TestCase):
     def setUp(self):
+        self.t = time.time()
         utils.reset_config()
         self.config = Config()
         self.client = Client(conn_class=FakeGithub,
                              config=self.config)
 
     def tearDown(self):
+        print "%s: %f" % (self.id(), time.time() - self.t)
         utils.reset_config()
 
     def expect(self, ev):
@@ -70,7 +73,8 @@ class GithubClientTestCase(unittest.TestCase):
     def test_github_approvers(self):
         client = StubbedGithub(config=Config(), conn_class=FakeGithub)
         client.config.github_core_team = "test team 1"
-        self.assertTrue(u'Lars Butler' in client.approvers)
+        print client.approvers
+        self.assertTrue(u'larsbutler' in client.approvers)
 
     def test_github_approvers_with_bad_coreteam(self):
         self.client.config.github_core_team = "fake team"

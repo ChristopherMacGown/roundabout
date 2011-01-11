@@ -14,11 +14,11 @@ class Roundabout(object):
     @classmethod
     def run(cls):
         """ Daemonize and poll for good pull requests """
+        log.info("Daemonizing")
+
         while True:
-            log.info("Daemonizing")
             github = Client()
             pull_requests = github.pull_requests
-
             pull_requests = [(u, p) for u, p
                                     in pull_requests.items()
                                     if p['lgtm'](github.approvers)]
@@ -29,22 +29,31 @@ class Roundabout(object):
 
             for url, pull_request in pull_requests:
                 log.info("processing %s" % url)
-                repo = Git(remote_name=pull_request.remote_name,
-                           remote_url=pull_request.remote_url,
-                           remote_branch=pull_request.remote_branch)
+
+                remote_name = pull_request['head']['repository']['owner']
+                remote_url =  pull_request['head']['repository']['url'] + ".git"
+                remote_branch = pull_request['head']['ref']
+
+                repo = Git(remote_name=remote_name,
+                           remote_url=remote_url,
+                           remote_branch=remote_branch)
 
                 # Create a remote, fetch it, checkout the branch
+
                 with repo as git:
+                    log.info("Cloning to %s" % repo.clonepath)
                     try:
                         log.info("merging master into remote")
                         git.merge('master')
                     except git.exc.GitCommandError:
-                        # TODO(chris): Log here and continue. 
-                        raise
+                        log.info("Merge failed, rejecting %s" % url)
+                        github.reject("Merge failed, rejecting.")
+                        continue
 
                     log.info("Starting hudson job")
                     git.push(git.local_branch_name)
                     build = Job.spawn_build(git.local_branch_name)
+                    log.info("build: %s" % build.url)
                     while not build.complete:
                         log.info("Job not complete, sleeping for 30 seconds...")
                         time.sleep(30)
@@ -60,5 +69,4 @@ class Roundabout(object):
                         git.push('master')
                     else:
                         log.info("Build failed, rejecting %s" % url)
-
-            sys.exit(0)
+                        github.reject("Build failed, rejecting.")

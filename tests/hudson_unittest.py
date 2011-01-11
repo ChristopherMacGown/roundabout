@@ -1,4 +1,5 @@
 import json
+import time
 import unittest
 from roundabout.config import Config
 from roundabout.hudson import Job
@@ -6,9 +7,11 @@ from tests import utils
 
 class HudsonTestCase(unittest.TestCase):
     def setUp(self):
+        self.t = time.time()
         self.config = Config()
 
-    def teardown(self):
+    def tearDown(self):
+        print "%s: %f" % (self.id(), time.time() - self.t)
         utils.reset_config()
 
     def test_get_spawn_build(self):

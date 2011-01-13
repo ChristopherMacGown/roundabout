@@ -41,7 +41,7 @@ class Roundabout(object):
                     try:
                         git.merge('master')
                     except git.exc.GitCommandError:
-                        pull_request.reject("Merge failed, rejecting.")
+                        pull_request.close("Merge failed, rejecting.")
                         continue
 
                     git.push(git.local_branch_name)
@@ -55,9 +55,9 @@ class Roundabout(object):
                     git.branch('master').checkout()
 
                     if build:
-                        log.info("Build successful!")
                         # Successful build, good coverage, and clean pylint.
                         git.merge(git.local_branch_name)
                         git.push('master')
+                        pull_request.close("Build successful!")
                     else:
-                        github.reject("Build failed, rejecting.")
+                        pull_request.close("Build failed, rejecting.")

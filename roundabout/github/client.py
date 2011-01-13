@@ -105,30 +105,28 @@ class PullRequest(object):
         """ Return a dict of the complete pull_request data from the github api
             for a single pull_request. """
 
-        print self.client
         return self.client._get("pulls",
                                 self.client.config.github_repo,
                                 str(self.number))['pull']
 
-    def comment(self, issue_id, message):
+    def comment(self, message):
         """
         Add a comment to the specified issue.
 
         Returns a dict representation of the comment.
         """
-        log.info("commenting on %s: %s" % (issue_id, message))
+        log.info("commenting on %s: %s" % (self.number,  message))
         return self.client.github.issues.comment(self.client.config.github_repo,
-                                                 issue_id, message)
+                                                 self.number, message)
 
-    def reject(self, pull_request_id, message):
+    def close(self, message):
         """
-        Add a rejection reason (comment) to the specified pull request,
-        then close it.
+        Add a comment to this pull request and close it.
 
         Returns the closed Issue.
         """
 
-        log.info("Rejecting %s" % self.html_url)
-        self.comment(pull_request_id, message)
+        self.comment(message)
+        log.info("Closing %s" % self.html_url)
         return self.client.github.issues.close(self.client.config.github_repo,
-                                               pull_request_id)
+                                               self.number)

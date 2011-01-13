@@ -101,7 +101,7 @@ class GithubClientTestCase(unittest.TestCase):
         
         # add the comment
         self.expect(utils.load(utils.testdata('comment.json')))
-        comment_result = pull_request.comment(test_issue_id, comment_text)
+        comment_result = pull_request.comment(comment_text)
     
         # now verify the comment was added 
         self.expect([Comment(x) for x 
@@ -145,5 +145,5 @@ class GithubClientTestCase(unittest.TestCase):
         pull_request = client.pull_requests.values()[0]
 
         self.expect(Issue(utils.load(utils.testdata('issue_closed.json'))['issue']))
-        rejected_issue = pull_request.reject(test_pr_id, reject_message)
+        rejected_issue = pull_request.close(reject_message)
         self.assertEqual(u'closed', rejected_issue.state)

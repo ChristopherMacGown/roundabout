@@ -1,3 +1,5 @@
+""" Roundabout logger """
+
 import logging
 import logging.handlers
 import time
@@ -10,4 +12,5 @@ LOGGER.addHandler(logging.handlers.RotatingFileHandler(CONFIG.default_logfile,
                                                        backupCount=5))
 
 def info(message):
+    """ Write message at info level to LOGGER """
     LOGGER.info("[%s] %s" % (time.strftime("%d-%m-%Y %H:%M:%S"), message))

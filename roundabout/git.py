@@ -63,7 +63,4 @@ class Git(object):
         log.info("pushing %s to %s" % (branch, remote))
         return self.repo.remote(remote).push(branch)
 
-def ridiculously_log_function_with_way_too_many_parameters_to_cause_pylint_errors(a, b, c, d, e, f, g, h, i, j, k, l):
-    print a, b, c, d, e, f, g, h, i, j, k, l
-
 

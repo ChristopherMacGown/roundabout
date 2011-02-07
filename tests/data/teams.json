@@ -1,2 +1,2 @@
-{"test team 1": {"users": [{"name": "Lars Butler", "login": "larsbutler", "type": "User"}], "permission": "pull", "name": "test team 1", "id": 12345}, 
+{"test team 1": {"users": [{"name": "Lars Butler", "login": "larsbutler", "type": "User"},{"login": "ChristopherMacGown", "type": "User"}], "permission": "pull", "name": "test team 1", "id": 12345}, 
  "test team 2": {"users": [{"login": "ChristopherMacGown", "type": "User"}], "permission": "admin", "name": "test team 2", "id": 54321}}

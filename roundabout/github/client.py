@@ -6,7 +6,8 @@ from github2.client import Github
 from roundabout import log
 from roundabout.config import Config
 
-LGTM_RE = re.compile("^%s$" % Config().default_lgtm)
+LGTM_RE = re.compile("^%s$" % Config().default_lgtm, re.I)
+REJECTED_RE = re.compile("rejecting")
 
 class Client(object):
     """ A borg style github client """
@@ -96,9 +97,15 @@ class PullRequest(object):
         """ Takes a list of approvers and checks if any of the approvers have
             "lgtmed" the request. Returns true if so, None otherwise. """
 
-        for comment in self.discussion:
-            if comment['user']['login'] in approvers and LGTM_RE.match(comment.get('body', "")):
-                return True
+        rejected = [c for c
+                      in self.discussion
+                      if REJECTED_RE.match(c.get('body', ''))]
+        lgtms= [c for c
+                  in self.discussion
+                  if c['user']['login'] in approvers
+                  and LGTM_RE.match(c.get('body', ''))]
+
+        return len(rejected) < len(lgtms)
 
 
     def __get_full_request(self):

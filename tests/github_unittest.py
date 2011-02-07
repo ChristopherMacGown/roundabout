@@ -22,6 +22,12 @@ class FakeGithub(object):
 class StubbedGithub(Client):
     """
     """
+
+    @property
+    def pull_request_files(self):
+        return self.__dict__.get('pull_request_files', ("pull_requests.json", 
+                                   "pull_request.json"))
+
     @property
     def teams(self):
         return utils.load(utils.testdata("teams.json"))
@@ -29,9 +35,9 @@ class StubbedGithub(Client):
     def _get(self, *args):
         if args[0] == "pulls": 
             if len(args) == 2: # PullRequests
-                return utils.load(utils.testdata("pull_requests.json"))
+                return utils.load(utils.testdata(self.pull_request_files[0]))
             elif len(args) == 3: # PullRequest
-                return utils.load(utils.testdata("pull_request.json"))
+                return utils.load(utils.testdata(self.pull_request_files[1]))
 
 
 class GithubClientTestCase(unittest.TestCase):
@@ -67,8 +73,26 @@ class GithubClientTestCase(unittest.TestCase):
         client.config.github_core_team = "test team 1"
         pull_requests = client.pull_requests
         self.assertTrue(pull_requests)
-        url, pull_request = pull_requests.items()[0]
-        self.assertFalse(pull_request.lgtm(client.approvers))
+
+    def test_lgtm(self):
+        client = StubbedGithub(config=Config(), conn_class=FakeGithub)
+        client.config.github_core_team = "test team 1"
+
+        def test_lgtm_without_reject():
+            print client.pull_requests
+            self.assertTrue([p for p
+                               in client.pull_requests 
+                               if p.lgtm(client.approvers)])
+
+        def test_lgtm_after_reject(self):
+            client.pull_request_files = ("lgtmed_pull_requests_with_rej.json", 
+                                         "lgtmed_pull_request_with_rej.json")
+            self.assertTrue([c for c
+                               in client.pull_requests 
+                               if c.lgtm(client.approvers)])
+
+        test_lgtm_without_reject()
+
 
     def test_github_approvers(self):
         client = StubbedGithub(config=Config(), conn_class=FakeGithub)
@@ -147,3 +171,4 @@ class GithubClientTestCase(unittest.TestCase):
         self.expect(Issue(utils.load(utils.testdata('issue_closed.json'))['issue']))
         rejected_issue = pull_request.close(reject_message)
         self.assertEqual(u'closed', rejected_issue.state)
+

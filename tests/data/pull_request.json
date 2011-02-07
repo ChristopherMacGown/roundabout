@@ -1,1 +1,191 @@
-{"pull":{"issue_user":{"name":"Lars Butler","company":"GEM","gravatar_id":"d7ed4dc5ad80ffecb3aed70fc7190e52","location":"Pavia, Italy / Zurich, Switzerland","blog":"www.LarsButler.com","type":"User","login":"larsbutler","email":"Lars.Butler@gmail.com"},"issue_updated_at":"2011-01-06T09:52:59-08:00","gravatar_id":"d7ed4dc5ad80ffecb3aed70fc7190e52","position":8.0,"number":8,"votes":0,"comments":0,"body":"Also a test pull request for writing the end-to-end test procedure.","title":"Small README updates","discussion":[{"type":"Commit","created_at":"2011-01-06T06:21:54-08:00","sha":"f57e125ac23a300a7008ee75ebb378ad43146e61","author":"Lars Butler","subject":"Updated README to be slightly less useless.","user":{"name":"Lars Butler","company":"GEM","gravatar_id":"d7ed4dc5ad80ffecb3aed70fc7190e52","location":"Pavia, Italy / Zurich, Switzerland","blog":"www.LarsButler.com","type":"User","login":"larsbutler","email":"Lars.Butler@gmail.com"},"email":"Lars.Butler@gmail.com"},{"type":"Commit","created_at":"2011-01-06T07:26:55-08:00","sha":"512c9600089149e18a653c6e17d7cd266e160eb2","author":"Lars Butler","subject":"Added a few notes on required packages to README","user":{"name":"Lars Butler","company":"GEM","gravatar_id":"d7ed4dc5ad80ffecb3aed70fc7190e52","location":"Pavia, Italy / Zurich, Switzerland","blog":"www.LarsButler.com","type":"User","login":"larsbutler","email":"Lars.Butler@gmail.com"},"email":"Lars.Butler@gmail.com"},{"type":"Commit","created_at":"2011-01-06T08:22:24-08:00","sha":"928e6653ef1d2da31429b4326dc8a0c0dfd1fef3","author":"Lars Butler","subject":"Added popplet link to readme (popplet illustrates workflow)","user":{"name":"Lars Butler","company":"GEM","gravatar_id":"d7ed4dc5ad80ffecb3aed70fc7190e52","location":"Pavia, Italy / Zurich, Switzerland","blog":"www.LarsButler.com","type":"User","login":"larsbutler","email":"Lars.Butler@gmail.com"},"email":"Lars.Butler@gmail.com"}],"base":{"repository":{"forks":2,"url":"https://github.com/ChristopherMacGown/roundabout","has_wiki":true,"homepage":"","pushed_at":"2011/01/06 09:25:56 -0800","created_at":"2010/12/05 00:33:41 -0800","fork":false,"open_issues":6,"watchers":2,"size":1216,"private":false,"has_issues":true,"name":"roundabout","owner":"ChristopherMacGown","has_downloads":true,"description":"A github merge-bot similar to Tarmac."},"sha":"765b5690fe2393d0b8a01ab72b5bce7290e7bafc","label":"ChristopherMacGown:master","user":{"gravatar_id":"4174216c1dc0f223ce608d5a3b66a585","type":"User","login":"ChristopherMacGown","email":""},"ref":"master"},"created_at":"2011-01-06T09:52:58-08:00","html_url":"https://github.com/ChristopherMacGown/roundabout/pull/8","head":{"repository":{"forks":0,"url":"https://github.com/larsbutler/roundabout","has_wiki":true,"homepage":"","pushed_at":"2011/01/06 09:50:54 -0800","created_at":"2010/12/05 05:04:47 -0800","fork":true,"open_issues":0,"watchers":2,"size":508,"private":false,"has_issues":false,"name":"roundabout","owner":"larsbutler","has_downloads":true,"description":"A github merge-bot similar to Tarmac."},"sha":"928e6653ef1d2da31429b4326dc8a0c0dfd1fef3","label":"larsbutler:master","user":{"name":"Lars Butler","company":"GEM","gravatar_id":"d7ed4dc5ad80ffecb3aed70fc7190e52","location":"Pavia, Italy / Zurich, Switzerland","blog":"www.LarsButler.com","type":"User","login":"larsbutler","email":"Lars.Butler@gmail.com"},"ref":"master"},"diff_url":"https://github.com/ChristopherMacGown/roundabout/pull/8.diff","updated_at":"2011-01-06T09:52:58-08:00","user":{"name":"Lars Butler","company":"GEM","gravatar_id":"d7ed4dc5ad80ffecb3aed70fc7190e52","location":"Pavia, Italy / Zurich, Switzerland","blog":"www.LarsButler.com","type":"User","login":"larsbutler","email":"Lars.Butler@gmail.com"},"closed_at":null,"patch_url":"https://github.com/ChristopherMacGown/roundabout/pull/8.patch","issue_created_at":"2011-01-06T09:52:59-08:00","labels":[],"state":"open"}}
+{"pull": {
+    "base": {
+        "label": "ChristopherMacGown:master", 
+        "ref": "master", 
+        "repository": {
+            "created_at": "2010/12/05 00:33:41 -0800", 
+            "description": "A github merge-bot similar to Tarmac.", 
+            "fork": false, 
+            "forks": 3, 
+            "has_downloads": true, 
+            "has_issues": true, 
+            "has_wiki": true, 
+            "homepage": "", 
+            "language": "Python", 
+            "name": "roundabout", 
+            "open_issues": 9, 
+            "owner": "ChristopherMacGown", 
+            "private": false, 
+            "pushed_at": "2011/01/23 13:07:48 -0800", 
+            "size": 1672, 
+            "url": "https://github.com/ChristopherMacGown/roundabout", 
+            "watchers": 3
+        }, 
+        "sha": "5c67e789b36a40ac9af9cc991658cfe30c501caa", 
+        "user": {
+            "email": "", 
+            "gravatar_id": "4174216c1dc0f223ce608d5a3b66a585", 
+            "login": "ChristopherMacGown", 
+            "name": "Christopher MacGown", 
+            "type": "User"
+        }
+    }, 
+    "body": "Was your comma key broken? :P", 
+    "closed_at": "2011-01-23T21:07:51-08:00", 
+    "comments": 2, 
+    "created_at": "2011-01-20T01:56:43-08:00", 
+    "diff_url": "https://github.com/ChristopherMacGown/roundabout/pull/20.diff", 
+    "discussion": [
+        {
+            "author": "Lars Butler", 
+            "created_at": "2011-01-20T01:54:35-08:00", 
+            "email": "Lars.Butler@gmail.com", 
+            "sha": "c9361e6f3219a80a75372fa490f88c419d722932", 
+            "subject": "Fixed some syntax errors in setup.py", 
+            "type": "Commit", 
+            "user": {
+                "blog": "www.LarsButler.com", 
+                "company": "GEM", 
+                "email": "Lars.Butler@gmail.com", 
+                "gravatar_id": "d7ed4dc5ad80ffecb3aed70fc7190e52", 
+                "location": "Pavia, Italy / Zurich, Switzerland", 
+                "login": "larsbutler", 
+                "name": "Lars Butler", 
+                "type": "User"
+            }
+        }, 
+        {
+            "author": "Lars Butler", 
+            "created_at": "2011-01-21T07:28:57-08:00", 
+            "email": "Lars.Butler@gmail.com", 
+            "sha": "575eb5c13aba7f180fcc09c2c04d38c915a4dbdf", 
+            "subject": "Test commit with some pylint violations", 
+            "type": "Commit", 
+            "user": {
+                "blog": "www.LarsButler.com", 
+                "company": "GEM", 
+                "email": "Lars.Butler@gmail.com", 
+                "gravatar_id": "d7ed4dc5ad80ffecb3aed70fc7190e52", 
+                "location": "Pavia, Italy / Zurich, Switzerland", 
+                "login": "larsbutler", 
+                "name": "Lars Butler", 
+                "type": "User"
+            }
+        }, 
+        {
+            "author": "Lars Butler", 
+            "created_at": "2011-01-21T07:56:58-08:00", 
+            "email": "Lars.Butler@gmail.com", 
+            "sha": "f2d334b726a09eae4e61871b0a1a43d390dbdf9c", 
+            "subject": "removed some test code", 
+            "type": "Commit", 
+            "user": {
+                "blog": "www.LarsButler.com", 
+                "company": "GEM", 
+                "email": "Lars.Butler@gmail.com", 
+                "gravatar_id": "d7ed4dc5ad80ffecb3aed70fc7190e52", 
+                "location": "Pavia, Italy / Zurich, Switzerland", 
+                "login": "larsbutler", 
+                "name": "Lars Butler", 
+                "type": "User"
+            }
+        }, 
+        {
+            "body": "LGTM", 
+            "created_at": "2011/01/23 13:04:40 -0800", 
+            "gravatar_id": "4174216c1dc0f223ce608d5a3b66a585", 
+            "id": 700992, 
+            "type": "IssueComment", 
+            "updated_at": "2011/01/23 13:06:33 -0800", 
+            "user": {
+                "email": "", 
+                "gravatar_id": "4174216c1dc0f223ce608d5a3b66a585", 
+                "login": "ChristopherMacGown", 
+                "name": "Christopher MacGown", 
+                "type": "User"
+            }
+        }, 
+        {
+            "body": "Build successful!", 
+            "created_at": "2011/01/23 13:07:49 -0800", 
+            "gravatar_id": "4174216c1dc0f223ce608d5a3b66a585", 
+            "id": 700994, 
+            "type": "IssueComment", 
+            "updated_at": "2011/01/23 13:07:49 -0800", 
+            "user": {
+                "email": "", 
+                "gravatar_id": "4174216c1dc0f223ce608d5a3b66a585", 
+                "login": "ChristopherMacGown", 
+                "name": "Christopher MacGown", 
+                "type": "User"
+            }
+        }
+    ], 
+    "gravatar_id": "d7ed4dc5ad80ffecb3aed70fc7190e52", 
+    "head": {
+        "label": "larsbutler:master", 
+        "ref": "master", 
+        "repository": {
+            "created_at": "2010/12/05 05:04:47 -0800", 
+            "description": "A github merge-bot similar to Tarmac.", 
+            "fork": true, 
+            "forks": 1, 
+            "has_downloads": true, 
+            "has_issues": false, 
+            "has_wiki": true, 
+            "homepage": "", 
+            "language": "Python", 
+            "name": "roundabout", 
+            "open_issues": 0, 
+            "owner": "larsbutler", 
+            "private": false, 
+            "pushed_at": "2011/01/21 07:57:06 -0800", 
+            "size": 872, 
+            "url": "https://github.com/larsbutler/roundabout", 
+            "watchers": 3
+        }, 
+        "sha": "f2d334b726a09eae4e61871b0a1a43d390dbdf9c", 
+        "user": {
+            "blog": "www.LarsButler.com", 
+            "company": "GEM", 
+            "email": "Lars.Butler@gmail.com", 
+            "gravatar_id": "d7ed4dc5ad80ffecb3aed70fc7190e52", 
+            "location": "Pavia, Italy / Zurich, Switzerland", 
+            "login": "larsbutler", 
+            "name": "Lars Butler", 
+            "type": "User"
+        }
+    }, 
+    "html_url": "https://github.com/ChristopherMacGown/roundabout/pull/20", 
+    "issue_created_at": "2011-01-20T01:56:43-08:00", 
+    "issue_updated_at": "2011-01-23T13:07:51-08:00", 
+    "issue_user": {
+        "blog": "www.LarsButler.com", 
+        "company": "GEM", 
+        "email": "Lars.Butler@gmail.com", 
+        "gravatar_id": "d7ed4dc5ad80ffecb3aed70fc7190e52", 
+        "location": "Pavia, Italy / Zurich, Switzerland", 
+        "login": "larsbutler", 
+        "name": "Lars Butler", 
+        "type": "User"
+    }, 
+    "labels": [], 
+    "merged_at": "2011-01-23T13:07:51-08:00", 
+    "number": 20, 
+    "patch_url": "https://github.com/ChristopherMacGown/roundabout/pull/20.patch", 
+    "position": 1.0, 
+    "state": "closed", 
+    "title": "Syntax error fixes to setup.py", 
+    "updated_at": "2011-01-23T13:07:51-08:00", 
+    "user": {
+        "blog": "www.LarsButler.com", 
+        "company": "GEM", 
+        "email": "Lars.Butler@gmail.com", 
+        "gravatar_id": "d7ed4dc5ad80ffecb3aed70fc7190e52", 
+        "location": "Pavia, Italy / Zurich, Switzerland", 
+        "login": "larsbutler", 
+        "name": "Lars Butler", 
+        "type": "User"
+    }, 
+    "votes": 0
+}}

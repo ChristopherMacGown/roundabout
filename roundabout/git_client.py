@@ -2,6 +2,7 @@
 
 import git
 import os
+import shutil
 
 from git import Repo, GitCommandError #pylint: disable=E1101
 from random import choice
@@ -56,6 +57,16 @@ class Git(object):
         """ Return the head object referenced by the branch name """
         return [b for b in self.repo.branches if branch == b.name][0]
 
+    def cleanup(self):
+        if self.local_branch_name == 'master':
+            raise GitException("Attempted to delete your remote master!")
+        
+        self.push(":%s" % self.local_branch_name)
+        try:
+            shutil.rmtree(self.clonepath)
+        except OSError, e:
+            raise GitException(e)
+
     def merge(self, branch):
         """ Merge the passed in branch with HEAD """
 
@@ -69,5 +80,3 @@ class Git(object):
         """ Push the branch up to the remote """
         log.info("pushing %s to %s" % (branch, remote))
         return self.repo.remote(remote).push(branch)
-
-

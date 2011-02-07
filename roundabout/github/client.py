@@ -110,7 +110,6 @@ class PullRequest(object):
                LGTM_RE.match(comment.get('body', "")):
                 return True
 
-
     def __get_full_request(self):
         """
         Return a dict of the complete pull_request data from the github api

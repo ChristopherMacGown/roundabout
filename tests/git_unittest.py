@@ -88,6 +88,39 @@ class GitTestCase(unittest.TestCase):
 
         self.assertTrue(repo.push('master'))
 
+    def test_cleanup_master_raises(self):
+        config = Config(config_files=[utils.testdata('good_git.cfg')])
+        remote_name = config.git_test_remote_name
+        remote_url = config.git_test_remote_url
+        remote_branch = config.git_test_remote_branch
+
+        repo = Git(remote_name=remote_name,
+                   remote_url=remote_url,
+                   remote_branch=remote_branch)
+        repo.local_branch_name = 'master'
+
+        self.assertRaises(GitException, repo.cleanup)
+
+    def test_cleanup_with_good_config_doesnt_raise(self):
+        config = Config(config_files=[utils.testdata('good_git.cfg')])
+        remote_name = config.git_test_remote_name
+        remote_url = config.git_test_remote_url
+        remote_branch = config.git_test_remote_branch
+
+        repo = Git(remote_name=remote_name,
+                   remote_url=remote_url,
+                   remote_branch=remote_branch)
+
+        try:
+            repo.cleanup()
+        except GitException, e:
+            result = False
+        else:
+            result = True
+
+        self.assertTrue(result)
+
+
     def test_clone_repo_with_bad_config(self):
         config = Config(config_files=[utils.testdata('bad_git.cfg')])
         remote_name = config.git_test_remote_name

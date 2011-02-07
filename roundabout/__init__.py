@@ -61,3 +61,5 @@ class Roundabout(object):
                         pull_request.close("Build successful!")
                     else:
                         pull_request.close("Build failed, rejecting.")
+
+                    git.cleanup()

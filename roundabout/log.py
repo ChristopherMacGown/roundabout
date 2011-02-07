@@ -11,3 +11,6 @@ LOGGER.addHandler(logging.handlers.RotatingFileHandler(CONFIG.default_logfile,
 
 def info(message):
     LOGGER.info("[%s] %s" % (time.strftime("%d-%m-%Y %H:%M:%S"), message))
+
+def error(message):
+    LOGGER.error("[%s] %s" % (time.strftime("%d-%m-%Y %H:%M:%S"), message))

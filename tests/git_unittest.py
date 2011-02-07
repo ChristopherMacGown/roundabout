@@ -1,8 +1,11 @@
+import git
 import time
 import unittest
+
 from roundabout.config import Config
 from roundabout.git import Git, GitException
 from tests import utils
+
 
 class GitTestCase(unittest.TestCase):
     def setUp(self):
@@ -29,13 +32,13 @@ class GitTestCase(unittest.TestCase):
         remote_url = config.git_test_remote_url
         remote_branch = config.git_test_remote_branch
 
-        git = Git(remote_name=remote_name,
-                  remote_url=remote_url,
-                  remote_branch=remote_branch)
-        git.repo.create_head(git.remote_branch)
-        self.assertTrue(git.__enter__())
-        self.assertTrue(git.branch('master').checkout())
-        self.assertFalse(git.__exit__())
+        repo = Git(remote_name=remote_name,
+                   remote_url=remote_url,
+                   remote_branch=remote_branch)
+        repo.repo.create_head(repo.remote_branch)
+        self.assertTrue(repo.__enter__())
+        self.assertTrue(repo.branch('master').checkout())
+        self.assertFalse(repo.__exit__())
 
     def test_clean_merge_with_good_config(self):
         config = Config(config_files=[utils.testdata('good_git.cfg')])
@@ -43,14 +46,35 @@ class GitTestCase(unittest.TestCase):
         remote_url = config.git_test_remote_url
         remote_branch = config.git_test_remote_branch
 
-        git = Git(remote_name=remote_name,
+        repo = Git(remote_name=remote_name,
+                   remote_url=remote_url,
+                   remote_branch=remote_branch)
+        repo.repo.create_head(repo.remote_branch)
+
+        with repo as repo:
+            self.assertTrue(repo.merge('master'))
+            self.assertTrue(repo.branch('master').checkout())
+
+
+    def test_merge_fails_for_some_reason_should_raise(self):
+        class FakeGit(git.Repo):
+            """ A fake git class """
+            def execute(self, command):
+                """ No matter what, we raise a git.exc.GitCommandError """
+                raise git.exc.GitCommandError(command, -9999)
+
+        config = Config(config_files=[utils.testdata('good_git.cfg')])
+        remote_name = config.git_test_remote_name
+        remote_url = config.git_test_remote_url
+        remote_branch = config.git_test_remote_branch
+
+        repo = Git(remote_name=remote_name,
                   remote_url=remote_url,
                   remote_branch=remote_branch)
-        git.repo.create_head(git.remote_branch)
+        repo.repo.create_head(repo.remote_branch)
+        repo.repo.git = FakeGit()
 
-        with git as repo:
-            self.assertTrue(git.merge('master'))
-            self.assertTrue(git.branch('master').checkout())
+        self.assertRaises(GitException, repo.merge, "master")
 
     def test_push_with_good_config(self):
         config = Config(config_files=[utils.testdata('good_git.cfg')])

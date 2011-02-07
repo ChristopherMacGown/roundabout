@@ -9,10 +9,11 @@ from roundabout import log
 from roundabout.config import Config
 
 
-class GitException(Exception):
-    """ """
-    pass
-
+class GitException(BaseException):
+    """ Roundabout git exceptions """
+    def __init__(self, e):
+        super(GitException, self).__init__(e)
+        log.error(str(e))
 
 class Git(object):
     """ Roundabout git package proxy """ 
@@ -56,7 +57,10 @@ class Git(object):
         """ Merge the passed in branch with HEAD """
 
         log.info("merging %s into %s" % (branch, self.repo.active_branch.name))
-        return self.repo.git.execute(('git', 'merge', branch))
+        try:
+            return self.repo.git.execute(('git', 'merge', branch))
+        except git.exc.GitCommandError, e:
+            raise GitException(e)
 
     def push(self, branch, remote='origin'):
         """ Push the branch up to the remote """

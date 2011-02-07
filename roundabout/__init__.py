@@ -3,7 +3,7 @@
 import sys
 import time
 from roundabout import log
-from roundabout.git import Git
+from roundabout.git import Git, GitException
 from roundabout.github.client import Client
 from roundabout.hudson import Job
 
@@ -40,7 +40,7 @@ class Roundabout(object):
                     log.info("Cloning to %s" % repo.clonepath)
                     try:
                         git.merge('master')
-                    except git.exc.GitCommandError:
+                    except GitException, e:
                         pull_request.close("Merge failed, rejecting.")
                         continue
 

@@ -22,12 +22,18 @@ class Client(object):
         self.github = conn_class(username=config.github_username,
                              api_token=config.github_api_token,
                              requests_per_second=config.github_req_per_second)
+        self.organization = self.config.github_organization
 
-    def _get(self, *args):
+    def get(self, *args):
+        """ Return a github request built from the *args """
         return self.github.request.get(*args)
 
     @property
     def approvers(self):
+        """
+        Return a list of usernames permitted to approve a merge request
+        """
+
         core_team = self.config.github_core_team
         try:
             return [user['login'] for user in self.teams[core_team]['users']]
@@ -40,16 +46,12 @@ class Client(object):
         the team and its members
         """
         teams_with_members = {}
-        teams = self._get('organizations', self.organization, "teams")['teams']
+        teams = self.get('organizations', self.organization, "teams")['teams']
 
         for team in teams:
-            team.update(self._get("teams", str(team['id']), "members"))
+            team.update(self.get("teams", str(team['id']), "members"))
             teams_with_members[team['name']] = team
         return teams_with_members
-
-    @property
-    def organization(self):
-        return self.config.github_organization
 
     @property
     def issues(self):
@@ -66,12 +68,14 @@ class Client(object):
         """ Return the list of pull_requests from the repo. """
         p_reqs = [PullRequest(self, p)
                   for p
-                  in self._get("pulls", self.config.github_repo)['pulls']]
+                  in self.get("pulls", self.config.github_repo)['pulls']]
         return dict([(p.html_url, p) for p in p_reqs])
 
 
 class PullRequest(object):
+    #pylint: disable=E1101
     """ A github pull request """
+
     def __init__(self, client, pull_request):
         """ Take a pull_request dict from github, and builds a PullRequest """
 
@@ -82,32 +86,40 @@ class PullRequest(object):
 
     @property
     def remote_url(self):
+        """ Return the remote URL from the repository dict. """
         return self.head['repository']['url'] + ".git"
 
     @property
     def remote_name(self):
+        """ Return the login of the branch owner """
         return self.head['repository']['owner']
 
     @property
     def remote_branch(self):
+        """ Return the branch name for the requested merge branch. """
         return self.head['ref']
 
     def lgtm(self, approvers):
-        """ Takes a list of approvers and checks if any of the approvers have
-            "lgtmed" the request. Returns true if so, None otherwise. """
+        """ 
+        Takes a list of approvers and checks if any of the approvers have
+        "lgtmed" the request. Returns true if so, None otherwise.
+        """
 
         for comment in self.discussion:
-            if comment['user']['login'] in approvers and LGTM_RE.match(comment.get('body', "")):
+            if comment['user']['login'] in approvers and \
+               LGTM_RE.match(comment.get('body', "")):
                 return True
 
 
     def __get_full_request(self):
-        """ Return a dict of the complete pull_request data from the github api
-            for a single pull_request. """
+        """
+        Return a dict of the complete pull_request data from the github api
+        for a single pull_request.
+        """
 
-        return self.client._get("pulls",
-                                self.client.config.github_repo,
-                                str(self.number))['pull']
+        return self.client.get("pulls",
+                               self.client.config.github_repo,
+                               str(self.number))['pull']
 
     def comment(self, message):
         """

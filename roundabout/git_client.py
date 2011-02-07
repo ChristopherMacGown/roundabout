@@ -1,19 +1,21 @@
-""" The Roundabout git package """
+""" The Roundabout git module. """
 
-from __future__ import absolute_import
 import git
 import os
-import random
-import string
+
+from git import Repo, GitCommandError #pylint: disable=E1101
+from random import choice
+from string import letters #pylint: disable=W0402
+
 from roundabout import log
 from roundabout.config import Config
 
 
 class GitException(BaseException):
     """ Roundabout git exceptions """
-    def __init__(self, e):
-        super(GitException, self).__init__(e)
-        log.error(str(e))
+    def __init__(self, exc):
+        super(GitException, self).__init__(exc)
+        log.error(str(exc))
 
 class Git(object):
     """ Roundabout git package proxy """ 
@@ -25,12 +27,12 @@ class Git(object):
         self.remote_branch = "remotes/%s/%s" % (remote_name, remote_branch)
         self.config = config
 
-        clonename = "".join([random.choice(string.letters) for i in range(8)])
-        self.clonepath = os.path.join(config.git_local_repo_path, clonename)
+        cn = "".join([choice(letters) for i in range(8)]) #pylint: disable=W0612
+        self.clonepath = os.path.join(config.git_local_repo_path, cn)
         try:
-            self.repo = git.Repo.clone_from(config.git_base_repo_url,
+            self.repo = Repo.clone_from(config.git_base_repo_url,
                                             self.clonepath)
-        except git.GitCommandError, e:
+        except GitCommandError, e:
             raise GitException(e)
 
     def __enter__(self):
@@ -44,6 +46,7 @@ class Git(object):
 
     @property
     def remote(self):
+        """ Create and return the remote object """
         self.repo.create_remote(self.remote_name, self.remote_url)
         return [remote for remote
                        in self.repo.remotes

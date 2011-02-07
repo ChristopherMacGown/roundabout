@@ -26,7 +26,7 @@ class StubbedGithub(Client):
     def teams(self):
         return utils.load(utils.testdata("teams.json"))
 
-    def _get(self, *args):
+    def get(self, *args):
         if args[0] == "pulls": 
             if len(args) == 2: # PullRequests
                 return utils.load(utils.testdata("pull_requests.json"))

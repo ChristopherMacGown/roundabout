@@ -3,7 +3,7 @@ import time
 import unittest
 
 from roundabout.config import Config
-from roundabout.git import Git, GitException
+from roundabout.git_client import Git, GitException
 from tests import utils
 
 

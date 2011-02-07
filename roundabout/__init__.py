@@ -3,7 +3,7 @@
 import sys
 import time
 from roundabout import log
-from roundabout.git import Git, GitException
+from roundabout.git_client import Git, GitException
 from roundabout.github.client import Client
 from roundabout.hudson import Job
 
@@ -41,7 +41,7 @@ class Roundabout(object):
                     try:
                         git.merge('master')
                     except GitException, e:
-                        pull_request.close("Merge failed, rejecting.")
+                        pull_request.close("Merge failed, rejecting.\n\n %s", e)
                         continue
 
                     git.push(git.local_branch_name)

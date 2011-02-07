@@ -9,8 +9,7 @@ from roundabout import log
 from roundabout.config import Config
 
 class Job(object):
-    """ A Hudson Job """
-
+    """ A Hudson Job is a configuration for CI builds. """
     def __init__(self, config=Config(), opener=None):
         self.config = config
         self.url = "%s/job/%s/api/json?depth=1" % (config.hudson_base_url,
@@ -25,7 +24,6 @@ class Job(object):
         """
         Create and return a Hudson paramaterized build of the current job
         """
-            
         job = cls(opener=opener)
         log.info("Starting hudson build on %s for %s" %
                     (job.config.hudson_job, branch))

@@ -1,6 +1,6 @@
 """ The Roundabout git module. """
 
-from __future__ import absolute_import
+import git
 import os
 
 from git import Repo, GitCommandError #pylint: disable=E1101
@@ -13,9 +13,9 @@ from roundabout.config import Config
 
 class GitException(BaseException):
     """ Roundabout git exceptions """
-    def __init__(self, e):
-        super(GitException, self).__init__(e)
-        log.error(str(e))
+    def __init__(self, exc):
+        super(GitException, self).__init__(exc)
+        log.error(str(exc))
 
 class Git(object):
     """ Roundabout git package proxy """ 
@@ -69,5 +69,3 @@ class Git(object):
         """ Push the branch up to the remote """
         log.info("pushing %s to %s" % (branch, remote))
         return self.repo.remote(remote).push(branch)
-
-

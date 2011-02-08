@@ -106,9 +106,12 @@ class PullRequest(object):
         """
 
         for comment in self.discussion:
-            if comment['user']['login'] in approvers and \
-               LGTM_RE.match(comment.get('body', "")):
-                return True
+            try:
+                if comment['user']['login'] in approvers and \
+                   LGTM_RE.match(comment.get('body', "")):
+                    return True
+            except TypeError:
+                continue
 
     def __get_full_request(self):
         """

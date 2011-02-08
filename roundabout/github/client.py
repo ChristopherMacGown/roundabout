@@ -110,7 +110,7 @@ class PullRequest(object):
                 if comment['user']['login'] in approvers and \
                    LGTM_RE.match(comment.get('body', "")):
                     return True
-            except NoneType:
+            except TypeError:
                 continue
 
     def __get_full_request(self):

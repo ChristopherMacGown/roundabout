@@ -60,4 +60,4 @@ class Roundabout(object):
                         git.push('master')
                         pull_request.close(git_client.BUILD_SUCCESS_MSG)
                     else:
-                        pull_request.close(git_client.BUILD_FAIL_MSG)
+                        pull_request.close(git_client.BUILD_FAIL_MSG % build.url)

@@ -12,7 +12,7 @@ from roundabout import log
 from roundabout.config import Config
 
 
-BUILD_FAIL_MSG = "Build failed, rejecting."
+BUILD_FAIL_MSG = "Build failed, rejecting.\n\n%s"
 MERGE_FAIL_MSG = "Merge failed, rejecting.\n\n%s"
 BUILD_SUCCESS_MSG = "Build successful! Merged!"
 

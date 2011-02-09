@@ -5,7 +5,7 @@ from roundabout.config import Config
 from roundabout.hudson import Job
 from tests import utils
 
-class HudsonTestCase(unittest.TestCase):
+class HudsonTestCase(utils.TestHelper):
     def setUp(self):
         self.t = time.time()
         self.config = Config()
@@ -35,7 +35,15 @@ class HudsonTestCase(unittest.TestCase):
             def read(self):
                 return json.JSONEncoder().encode(self.expected)
 
-        self.assertRaises(IndexError, Job.spawn_build, 'test_branch', opener=FakeHudson)
+        def fake_sleep(seconds):
+            """ stub out time.sleep so we can make sure it's called """
+            raise RuntimeError(seconds)
+
+        time.sleep = fake_sleep
+        try:
+            self.assertCalled(time.sleep, Job.spawn_build, 'test_branch', opener=FakeHudson)
+        except RuntimeError:
+            pass
 
     def test_get_job_data(self):
         job = Job()

@@ -3,7 +3,7 @@
 import sys
 import time
 from roundabout import log
-from roundabout.git import Git
+from roundabout import git_client
 from roundabout.github.client import Client
 from roundabout.hudson import Job
 
@@ -30,9 +30,9 @@ class Roundabout(object):
             for url, pull_request in pull_requests:
                 log.info("processing %s" % url)
 
-                repo = Git(remote_name=pull_request.remote_name,
-                           remote_url=pull_request.remote_url,
-                           remote_branch=pull_request.remote_branch)
+                repo = git_client.Git(remote_name=pull_request.remote_name,
+                                      remote_url=pull_request.remote_url,
+                                      remote_branch=pull_request.remote_branch)
 
                 # Create a remote, fetch it, checkout the branch
 
@@ -40,8 +40,8 @@ class Roundabout(object):
                     log.info("Cloning to %s" % repo.clonepath)
                     try:
                         git.merge('master')
-                    except git.exc.GitCommandError:
-                        pull_request.close("Merge failed, rejecting.")
+                    except git_client.GitException, e:
+                        pull_request.close(git_client.MERGE_FAIL_MSG % e)
                         continue
 
                     git.push(git.local_branch_name)
@@ -58,6 +58,6 @@ class Roundabout(object):
                         # Successful build, good coverage, and clean pylint.
                         git.merge(git.local_branch_name)
                         git.push('master')
-                        pull_request.close("Build successful!")
+                        pull_request.close(git_client.BUILD_SUCCESS_MSG)
                     else:
-                        pull_request.close("Build failed, rejecting.")
+                        pull_request.close(git_client.BUILD_FAIL_MSG % build.url)

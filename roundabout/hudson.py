@@ -38,10 +38,7 @@ class Job(object):
                                   in job.builds 
                                   if build_id == build.number][0]
                 except IndexError:
-                    if opener:
-                        raise
-                    else:
-                        time.sleep(1)
+                    time.sleep(1)
 
     @property
     def properties(self):

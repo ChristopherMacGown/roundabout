@@ -12,11 +12,17 @@ from roundabout import log
 from roundabout.config import Config
 
 
+BUILD_FAIL_MSG = "Build failed, rejecting."
+MERGE_FAIL_MSG = "Merge failed, rejecting.\n\n%s"
+BUILD_SUCCESS_MSG = "Build successful! Merged!"
+
+
 class GitException(BaseException):
     """ Roundabout git exceptions """
     def __init__(self, exc):
         super(GitException, self).__init__(exc)
         log.error(str(exc))
+
 
 class Git(object):
     """ Roundabout git package proxy """ 
@@ -42,8 +48,7 @@ class Git(object):
         return self
 
     def __exit__(self, *args):
-        self.repo.delete_remote(self.remote_name)
-        self.repo.delete_head(self.local_branch_name)
+        self.cleanup()
 
     @property
     def remote(self):
@@ -58,6 +63,11 @@ class Git(object):
         return [b for b in self.repo.branches if branch == b.name][0]
 
     def cleanup(self):
+        """
+        Delete the remote merge branch and the temporary cloned repo. If the
+        local_branch_name is master (which can't happen in the normal workflow)
+        or shutil.rmtree raises an OSError we raise GitException.
+        """
         if self.local_branch_name == 'master':
             raise GitException("Attempted to delete your remote master!")
         
@@ -74,6 +84,8 @@ class Git(object):
         try:
             return self.repo.git.execute(('git', 'merge', branch))
         except git.exc.GitCommandError, e:
+            # If there's a merge failure reset and raise.
+            self.repo.head.reset(working_tree=True)
             raise GitException(e)
 
     def push(self, branch, remote='origin'):

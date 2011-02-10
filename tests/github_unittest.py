@@ -2,7 +2,7 @@ import json
 import time
 import unittest
 from roundabout.config import Config
-from roundabout.github.client import Client
+from roundabout.github.client import Client, REJECTED_RE
 from tests import utils
 
 
@@ -23,10 +23,9 @@ class StubbedGithub(Client):
     """
     """
 
-    @property
-    def pull_request_files(self):
-        return self.__dict__.get('pull_request_files', ("pull_requests.json", 
-                                   "pull_request.json"))
+    def __init__(self, *args, **kwargs):
+        super(StubbedGithub, self).__init__(*args, **kwargs)
+        self.pull_request_files = ("pull_requests.json", "pull_request.json")
 
     @property
     def teams(self):
@@ -79,25 +78,39 @@ class GithubClientTestCase(unittest.TestCase):
         client.config.github_core_team = "test team 1"
 
         def test_lgtm_without_reject():
-            print client.pull_requests
-            self.assertTrue([p for p
-                               in client.pull_requests 
+            self.assertTrue([p for (url, p)
+                               in client.pull_requests.items()
                                if p.lgtm(client.approvers)])
 
-        def test_lgtm_after_reject(self):
+        def test_no_lgtm_after_reject_should_fail():
+            client.pull_request_files = ("unlgtmed_pull_requests_with_rej.json", 
+                                         "unlgtmed_pull_request_with_rej.json")
+
+            rej = [c.get('body', '') for c in client.pull_requests.items()[0][1].discussion][-1]
+
+            self.assertFalse([p for (url, p)
+                                in client.pull_requests.items()
+                                if p.lgtm(client.approvers)])
+
+
+        def test_lgtm_after_reject():
             client.pull_request_files = ("lgtmed_pull_requests_with_rej.json", 
                                          "lgtmed_pull_request_with_rej.json")
-            self.assertTrue([c for c
-                               in client.pull_requests 
-                               if c.lgtm(client.approvers)])
+
+            [(url, p)] = client.pull_requests.items()
+
+            self.assertTrue([p for (url, p)
+                               in client.pull_requests.items()
+                               if p.lgtm(client.approvers)])
 
         test_lgtm_without_reject()
+        test_no_lgtm_after_reject_should_fail()
+        test_lgtm_after_reject()
 
 
     def test_github_approvers(self):
         client = StubbedGithub(config=Config(), conn_class=FakeGithub)
         client.config.github_core_team = "test team 1"
-        print client.approvers
         self.assertTrue(u'larsbutler' in client.approvers)
 
     def test_github_approvers_with_bad_coreteam(self):

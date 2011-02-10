@@ -109,7 +109,7 @@ class PullRequest(object):
         lgtms = []
         rejected = [c for c
                       in self.discussion
-                      if REJECTED_RE.match(c.get('body', ''))]
+                      if REJECTED_RE.search(c.get('body', ''))]
 
         for comment in self.discussion:
             try:

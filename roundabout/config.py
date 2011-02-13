@@ -15,12 +15,15 @@
 
 
 """ roundabout config singleton """
+import re
+import yaml
+
+SECTION_KEY_RE = re.compile("(?P<section>.*?)_(?P<key>.*)")
 
 def parse_config_yaml(cfg):
     """ Lazy load yaml and try to load a configuration """
 
     try:
-        import yaml
         return yaml.load(cfg)  # Returns None which sucks.
     except yaml.parser.ParserError as e:
         raise ValueError(e.args)
@@ -32,6 +35,10 @@ def parse_config_json(cfg):
     import json
     return json.JSONDecoder().decode(cfg)
 
+def _get_key(key):
+    """ Return the section and key from a blah_somekey configuration entry """
+    match = SECTION_KEY_RE.match(key)
+    return match.group('section'), match.group('key')
 
 class ConfigError(Exception):
     """ A config error """
@@ -66,7 +73,18 @@ class Config(object):
                 raise ConfigError("Didn't find configuration files, bailing.")
 
     def __getattr__(self, item):
-        return self.__dict__.get(item, None)
+        section, key = _get_key(item)
+        section_dict = self.__dict__.get(section, {})
+        return section_dict.get(key, None)
+
+    def update(self, key, value):
+        """ Update the config and write it to disk """
+        # todo(chris): Either generalize this for json/yaml or throw one away.
+
+        section, key = _get_key(key)
+        self.__dict__[section][key] = value
+        with open('roundabout.cfg', 'w') as fp:
+            yaml.dump(self.__dict__, fp, default_flow_style=False)
 
     def _parse_config_file(self, config_file):
         """ Parses a configuration file as a dict and populates __dict__
@@ -78,19 +96,12 @@ class Config(object):
         try:
             with open(config_file) as fp:
                 cfg = fp.read()
-
-                config = None
                 for parser in parsers:
                     try:
-                        config = parser(cfg)
-                        if config:
+                        self.__dict__.update(parser(cfg))
+                        if self.__dict__:
                             break
                     except (ValueError, ImportError):
                         pass
-
-                for (section_name, section) in config.items():
-                    for (item, value) in section.items():
-                        config_attr = "%s_%s" % (section_name, item)
-                        self.__setattr__(config_attr, value)
         except (AttributeError, TypeError, IOError):
             pass

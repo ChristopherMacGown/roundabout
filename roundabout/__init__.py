@@ -2,8 +2,10 @@
 
 import sys
 import time
-from roundabout import log
+from roundabout import config
 from roundabout import git_client
+from roundabout import log
+from roundabout import pylint
 from roundabout.github.client import Client
 from roundabout.hudson import Job
 
@@ -17,7 +19,8 @@ class Roundabout(object):
         log.info("Daemonizing")
 
         while True:
-            github = Client()
+            cfg = config.Config()
+            github = Client(config=cfg)
             pull_requests = github.pull_requests
             pull_requests = [(u, p) for u, p
                                     in pull_requests.items()
@@ -44,6 +47,13 @@ class Roundabout(object):
                         pull_request.close(git_client.MERGE_FAIL_MSG % e)
                         continue
 
+                    if cfg.pylint_modules:
+                        py_res = pylint.Pylint(cfg.pylint_modules,
+                                               cfg=cfg, path=repo.clonepath)
+                        if not py_res:
+                            pull_request.close(pylint.PYLINT_FAIL_MSG %
+                            (py_res.previous_score, cfg.pylint_current_score))
+
                     git.push(git.local_branch_name)
                     build = Job.spawn_build(git.local_branch_name)
                     while not build.complete:
@@ -60,4 +70,5 @@ class Roundabout(object):
                         git.push('master')
                         pull_request.close(git_client.BUILD_SUCCESS_MSG)
                     else:
-                        pull_request.close(git_client.BUILD_FAIL_MSG % build.url)
+                        pull_request.close(
+                            git_client.BUILD_FAIL_MSG % build.url)

@@ -18,9 +18,9 @@ class GitTestCase(utils.TestHelper):
 
     def test_clone_repo_with_good_config(self):
         config = Config(config_files=[utils.testdata('good_git.cfg')])
-        remote_name = config.git_test_remote_name
-        remote_url = config.git_test_remote_url
-        remote_branch = config.git_test_remote_branch
+        remote_name = config.test_remote_name
+        remote_url = config.test_remote_url
+        remote_branch = config.test_remote_branch
         repo = Git(remote_name=remote_name,
                    remote_url=remote_url,
                    remote_branch=remote_branch)
@@ -28,9 +28,9 @@ class GitTestCase(utils.TestHelper):
 
     def test_enter_repo_with_good_config(self):
         config = Config(config_files=[utils.testdata('good_git.cfg')])
-        remote_name = config.git_test_remote_name
-        remote_url = config.git_test_remote_url
-        remote_branch = config.git_test_remote_branch
+        remote_name = config.test_remote_name
+        remote_url = config.test_remote_url
+        remote_branch = config.test_remote_branch
 
         repo = Git(remote_name=remote_name,
                    remote_url=remote_url,
@@ -42,9 +42,9 @@ class GitTestCase(utils.TestHelper):
 
     def test_clean_merge_with_good_config(self):
         config = Config(config_files=[utils.testdata('good_git.cfg')])
-        remote_name = config.git_test_remote_name
-        remote_url = config.git_test_remote_url
-        remote_branch = config.git_test_remote_branch
+        remote_name = config.test_remote_name
+        remote_url = config.test_remote_url
+        remote_branch = config.test_remote_branch
 
         repo = Git(remote_name=remote_name,
                    remote_url=remote_url,
@@ -68,9 +68,9 @@ class GitTestCase(utils.TestHelper):
 
 
         config = Config(config_files=[utils.testdata('good_git.cfg')])
-        remote_name = config.git_test_remote_name
-        remote_url = config.git_test_remote_url
-        remote_branch = config.git_test_remote_branch
+        remote_name = config.test_remote_name
+        remote_url = config.test_remote_url
+        remote_branch = config.test_remote_branch
 
         repo = Git(remote_name=remote_name,
                   remote_url=remote_url,
@@ -86,9 +86,9 @@ class GitTestCase(utils.TestHelper):
 
     def test_push_with_good_config(self):
         config = Config(config_files=[utils.testdata('good_git.cfg')])
-        remote_name = config.git_test_remote_name
-        remote_url = config.git_test_remote_url
-        remote_branch = config.git_test_remote_branch
+        remote_name = config.test_remote_name
+        remote_url = config.test_remote_url
+        remote_branch = config.test_remote_branch
 
         repo = Git(remote_name=remote_name,
                    remote_url=remote_url,
@@ -98,9 +98,9 @@ class GitTestCase(utils.TestHelper):
 
     def test_cleanup_master_raises(self):
         config = Config(config_files=[utils.testdata('good_git.cfg')])
-        remote_name = config.git_test_remote_name
-        remote_url = config.git_test_remote_url
-        remote_branch = config.git_test_remote_branch
+        remote_name = config.test_remote_name
+        remote_url = config.test_remote_url
+        remote_branch = config.test_remote_branch
 
         repo = Git(remote_name=remote_name,
                    remote_url=remote_url,
@@ -111,9 +111,9 @@ class GitTestCase(utils.TestHelper):
 
     def test_cleanup_with_os_error_raises(self):
         config = Config(config_files=[utils.testdata('good_git.cfg')])
-        remote_name = config.git_test_remote_name
-        remote_url = config.git_test_remote_url
-        remote_branch = config.git_test_remote_branch
+        remote_name = config.test_remote_name
+        remote_url = config.test_remote_url
+        remote_branch = config.test_remote_branch
 
         repo = Git(remote_name=remote_name,
                    remote_url=remote_url,
@@ -125,9 +125,9 @@ class GitTestCase(utils.TestHelper):
 
     def test_cleanup_with_good_config_doesnt_raise(self):
         config = Config(config_files=[utils.testdata('good_git.cfg')])
-        remote_name = config.git_test_remote_name
-        remote_url = config.git_test_remote_url
-        remote_branch = config.git_test_remote_branch
+        remote_name = config.test_remote_name
+        remote_url = config.test_remote_url
+        remote_branch = config.test_remote_branch
 
         repo = Git(remote_name=remote_name,
                    remote_url=remote_url,
@@ -144,8 +144,8 @@ class GitTestCase(utils.TestHelper):
 
     def test_clone_repo_with_bad_config(self):
         config = Config(config_files=[utils.testdata('bad_git.cfg')])
-        remote_name = config.git_test_remote_name
-        remote_url = config.git_test_remote_url
-        remote_branch = config.git_test_remote_branch
+        remote_name = config.test_remote_name
+        remote_url = config.test_remote_url
+        remote_branch = config.test_remote_branch
 
         self.assertRaises(GitException, Git, remote_name, remote_url, remote_branch, config)

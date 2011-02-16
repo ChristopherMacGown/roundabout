@@ -6,7 +6,7 @@ import yaml
 from roundabout import log
 
 
-def optionparser():
+def option_parser():
     """
     Return an :mod:`optparse` parser for parsing command line options.
     """

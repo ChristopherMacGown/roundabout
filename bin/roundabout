@@ -8,15 +8,16 @@ from roundabout import utils
 
 
 if __name__ == '__main__':
+    """ Do stuff """
     optparser = utils.option_parser()
     (options, args) = optparser.parse_args()
 
-    if len(args) != 2:
+    if len(args) != 1:
         optparser.error("Insufficient arguments")
         sys.exit(1)
 
-    if args[1] in ['start', 'stop', 'restart', 'run']:
-        roundabout.main(args[1], options)
+    if args[0] in ['start', 'stop', 'restart', 'run']:
+        roundabout.main(args[0], options)
     else:
         optparser.error("Invalid argument")
         sys.exit(1)

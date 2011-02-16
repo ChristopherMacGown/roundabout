@@ -15,10 +15,12 @@ from roundabout import hudson
 
 def main(command, options):
     """ Function called by bin/roundabout """
-    config_files = options.get('config_file', roundabout.config.DEFAULTS)
+
+    config_files = options.config_file or roundabout.config.DEFAULTS
     config = roundabout.config.Config(config_files=config_files)
     daemon = roundabout.daemon.Daemon(
-                pidfile=config.get('default_pidfile','roundabout.pid'))
+                stdout='roundabout.log',
+                pidfile=config.default_pidfile or 'roundabout.pid')
 
     if command == 'start':
         log.info("Daemonizing")

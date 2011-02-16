@@ -8,7 +8,7 @@ from roundabout.config import Config, ConfigError
 
 try:
     CONFIG = Config()
-    LOG_LEVEL = CONFIG.default_log_level
+    LOG_LEVEL = CONFIG.default_log_level or logging.DEBUG
     LOG_HANDLER = logging.handlers.RotatingFileHandler(CONFIG.default_logfile,
                                                        backupCount=5)
 except ConfigError:

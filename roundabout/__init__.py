@@ -10,6 +10,13 @@ from roundabout.github.client import Client
 from roundabout.hudson import Job
 
 
+
+
+def main(command, options):
+    print command
+
+
+'''
 class Roundabout(object):
     """ Tarmac style merge bot for github """
 
@@ -72,3 +79,4 @@ class Roundabout(object):
                     else:
                         pull_request.close(
                             git_client.BUILD_FAIL_MSG % build.url)
+'''

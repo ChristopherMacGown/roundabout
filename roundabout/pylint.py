@@ -4,7 +4,7 @@ import os
 
 from roundabout import config
 
-PYLINT_CMD = "PYTHONPATH=%s pylint -f parseable -r no -dI %s"
+PYLINT_CMD = "PYTHONPATH=%s pylint --rcfile=%s -f parseable -r no -dI %s"
 PYLINT_FAIL_MSG = "Rejecting due to increased pylint score: %s %s"
 
 
@@ -27,7 +27,7 @@ class Pylint(object):
         higher than the previous score or the maximum.
         """
 
-        results = os.popen(PYLINT_CMD % (self.path, 
+        results = os.popen(PYLINT_CMD % (self.path, self.path,
                                          str.join(' ', list(self.modules))))
         messages = [message for message in results.read().splitlines()]
         self.cfg.update('pylint_current_score', len(messages))

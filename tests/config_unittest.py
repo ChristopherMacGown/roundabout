@@ -1,6 +1,6 @@
 import time
 import unittest
-from roundabout.config import Config, ConfigError, parse_config_yaml, parse_config_json
+from roundabout.config import Config, ConfigError
 from tests import utils 
 
 
@@ -10,29 +10,16 @@ class ConfigTestCase(unittest.TestCase):
 
     def setUp(self):
         self.t = time.time()
-        utils.reset_config()
 
     def tearDown(self):
         print "%s: %f" % (self.id(), time.time() - self.t)
-        utils.reset_config()
-
-    def test_yaml_config(self):
-        cfg = parse_config_yaml("---\nfoo: 'bar'")
-        self.assertEqual(cfg, {'foo':'bar'})
-        self.assertRaises(ValueError, parse_config_yaml, "{{}")
-
-    def test_json_config(self):
-        self.assertTrue(parse_config_json('{"foo": "bar"}'))
-        cfg = parse_config_json('{"foo": "bar"}')
-        self.assertEqual(cfg, {'foo':'bar'})
-        self.assertRaises(ValueError, parse_config_json, "{{}")
 
     def test_that_underunder_getattr_returns_sanity(self):
         config = Config(config_files=[self._test_good_config_file])
         self.assertEqual(config.__getattr__('nothing_here'), None)
         self.assertEqual(config.__getattr__('test_attribute'), 12345)
 
-    def test_that_json_parsing_works(self):
+    def test_that_parsing_works(self):
         config = Config(config_files=[self._test_good_config_file])
         self.assertTrue(config.test_attribute)
         self.assertFalse(config.test_false_attribute)

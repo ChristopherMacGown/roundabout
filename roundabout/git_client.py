@@ -9,7 +9,6 @@ from random import choice
 from string import letters #pylint: disable=W0402
 
 from roundabout import log
-from roundabout.config import Config
 
 
 BUILD_FAIL_MSG = "Build failed, rejecting.\n\n%s"
@@ -27,7 +26,7 @@ class GitException(BaseException):
 class Git(object):
     """ Roundabout git package proxy """ 
 
-    def __init__(self, remote_name, remote_url, remote_branch, config=Config()):
+    def __init__(self, remote_name, remote_url, remote_branch, config):
         self.remote_name = remote_name
         self.remote_url = remote_url
         self.local_branch_name = "merge_%s" % remote_branch

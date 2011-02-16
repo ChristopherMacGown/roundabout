@@ -16,7 +16,9 @@ if __name__ == '__main__':
         optparser.error("Insufficient arguments")
         sys.exit(1)
 
-    if args[0] in ['start', 'stop', 'restart', 'run']:
+    if args[0] == 'update_config':
+        utils.update_config(options.config_file)
+    elif args[0] in ['start', 'stop', 'restart', 'run']:
         roundabout.main(args[0], options)
     else:
         optparser.error("Invalid argument")

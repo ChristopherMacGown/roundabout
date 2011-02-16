@@ -11,10 +11,6 @@ def load(filename):
     with open(filename) as fp:
         return json.JSONDecoder().decode(fp.read())
 
-def reset_config():
-    # Reset config
-    Config.__shared_state__.clear()
-
 class was_called(object):
     def __init__(self, method):
         self.was_called = False

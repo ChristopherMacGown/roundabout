@@ -10,48 +10,31 @@ from tests import utils
 class GitTestCase(utils.TestHelper):
     def setUp(self):
         self.t = time.time()
-        utils.reset_config()
+        config = Config(config_files=[utils.testdata('good_git.cfg')])
+        remote_name = config.test_remote_name
+        remote_url = config.test_remote_url
+        remote_branch = config.test_remote_branch
+        self.repo = Git(remote_name=remote_name,
+                        remote_url=remote_url,
+                        remote_branch=remote_branch,
+                        config=config)
 
     def tearDown(self):
         print "%s: %f" % (self.id(), time.time() - self.t)
-        utils.reset_config()
 
     def test_clone_repo_with_good_config(self):
-        config = Config(config_files=[utils.testdata('good_git.cfg')])
-        remote_name = config.test_remote_name
-        remote_url = config.test_remote_url
-        remote_branch = config.test_remote_branch
-        repo = Git(remote_name=remote_name,
-                   remote_url=remote_url,
-                   remote_branch=remote_branch)
-        self.assertTrue(repo)
+        self.assertTrue(self.repo)
 
     def test_enter_repo_with_good_config(self):
-        config = Config(config_files=[utils.testdata('good_git.cfg')])
-        remote_name = config.test_remote_name
-        remote_url = config.test_remote_url
-        remote_branch = config.test_remote_branch
-
-        repo = Git(remote_name=remote_name,
-                   remote_url=remote_url,
-                   remote_branch=remote_branch)
-        repo.repo.create_head(repo.remote_branch)
-        self.assertTrue(repo.__enter__())
-        self.assertTrue(repo.branch('master').checkout())
-        self.assertFalse(repo.__exit__())
+        self.repo.repo.create_head(self.repo.remote_branch)
+        self.assertTrue(self.repo.__enter__())
+        self.assertTrue(self.repo.branch('master').checkout())
+        self.assertFalse(self.repo.__exit__())
 
     def test_clean_merge_with_good_config(self):
-        config = Config(config_files=[utils.testdata('good_git.cfg')])
-        remote_name = config.test_remote_name
-        remote_url = config.test_remote_url
-        remote_branch = config.test_remote_branch
+        self.repo.repo.create_head(self.repo.remote_branch)
 
-        repo = Git(remote_name=remote_name,
-                   remote_url=remote_url,
-                   remote_branch=remote_branch)
-        repo.repo.create_head(repo.remote_branch)
-
-        with repo as repo:
+        with self.repo as repo:
             self.assertTrue(repo.merge('master'))
             self.assertTrue(repo.branch('master').checkout())
 
@@ -66,75 +49,29 @@ class GitTestCase(utils.TestHelper):
                 """ Pretend to reset a failed merge. """
                 pass
 
+        self.repo.repo.create_head(self.repo.remote_branch)
+        self.repo.repo.git = FakeGit()
 
-        config = Config(config_files=[utils.testdata('good_git.cfg')])
-        remote_name = config.test_remote_name
-        remote_url = config.test_remote_url
-        remote_branch = config.test_remote_branch
-
-        repo = Git(remote_name=remote_name,
-                  remote_url=remote_url,
-                  remote_branch=remote_branch)
-        repo.repo.create_head(repo.remote_branch)
-        repo.repo.git = FakeGit()
-
-        self.assertRaises(GitException, repo.merge, "master")
+        self.assertRaises(GitException, self.repo.merge, "master")
         try:
-            self.assertCalled(repo.repo.git.reset, repo.merge, "master")
+            self.assertCalled(self.repo.repo.git.reset, self.repo.merge, "master")
         except GitException, e:
             pass
 
     def test_push_with_good_config(self):
-        config = Config(config_files=[utils.testdata('good_git.cfg')])
-        remote_name = config.test_remote_name
-        remote_url = config.test_remote_url
-        remote_branch = config.test_remote_branch
-
-        repo = Git(remote_name=remote_name,
-                   remote_url=remote_url,
-                   remote_branch=remote_branch)
-
-        self.assertTrue(repo.push('master'))
+        self.assertTrue(self.repo.push('master'))
 
     def test_cleanup_master_raises(self):
-        config = Config(config_files=[utils.testdata('good_git.cfg')])
-        remote_name = config.test_remote_name
-        remote_url = config.test_remote_url
-        remote_branch = config.test_remote_branch
-
-        repo = Git(remote_name=remote_name,
-                   remote_url=remote_url,
-                   remote_branch=remote_branch)
-        repo.local_branch_name = 'master'
-
-        self.assertRaises(GitException, repo.cleanup)
+        self.repo.local_branch_name = 'master'
+        self.assertRaises(GitException, self.repo.cleanup)
 
     def test_cleanup_with_os_error_raises(self):
-        config = Config(config_files=[utils.testdata('good_git.cfg')])
-        remote_name = config.test_remote_name
-        remote_url = config.test_remote_url
-        remote_branch = config.test_remote_branch
-
-        repo = Git(remote_name=remote_name,
-                   remote_url=remote_url,
-                   remote_branch=remote_branch)
-
-        repo.clonepath = "/this/path/doesn't/exist"
-
-        self.assertRaises(GitException, repo.cleanup)
+        self.repo.clonepath = "/this/path/doesn't/exist"
+        self.assertRaises(GitException, self.repo.cleanup)
 
     def test_cleanup_with_good_config_doesnt_raise(self):
-        config = Config(config_files=[utils.testdata('good_git.cfg')])
-        remote_name = config.test_remote_name
-        remote_url = config.test_remote_url
-        remote_branch = config.test_remote_branch
-
-        repo = Git(remote_name=remote_name,
-                   remote_url=remote_url,
-                   remote_branch=remote_branch)
-
         try:
-            repo.cleanup()
+            self.repo.cleanup()
         except GitException, e:
             result = False
         else:

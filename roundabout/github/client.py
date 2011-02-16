@@ -4,21 +4,17 @@ from __future__ import absolute_import
 import re
 from github2.client import Github
 from roundabout import log
-from roundabout.config import Config
-
-LGTM_RE = re.compile("^%s$" % Config().default_lgtm, re.I)
-REJECTED_RE = re.compile("rejecting")
 
 class Client(object):
     """ A borg style github client """
     __shared_state = {}
 
-    def __new__(cls, config=Config(), conn_class=Github): #pylint: disable=W0613
+    def __new__(cls, config, conn_class=Github): #pylint: disable=W0613
         self = object.__new__(cls)
         self.__dict__ = cls.__shared_state
         return self
 
-    def __init__(self, config=Config(), conn_class=Github):
+    def __init__(self, config, conn_class=Github):
         self.config = config
         self.github = conn_class(username=config.github_username,
                              api_token=config.github_api_token,
@@ -67,7 +63,7 @@ class Client(object):
     @property
     def pull_requests(self):
         """ Return the list of pull_requests from the repo. """
-        p_reqs = [PullRequest(self, p)
+        p_reqs = [PullRequest(self, p, self.config.default_lgtm)
                   for p
                   in self.get("pulls", self.config.github_repo)['pulls']]
         return dict([(p.html_url, p) for p in p_reqs])
@@ -77,11 +73,12 @@ class PullRequest(object):
     #pylint: disable=E1101
     """ A github pull request """
 
-    def __init__(self, client, pull_request):
+    def __init__(self, client, pull_request, lgtm_text):
         """ Take a pull_request dict from github, and builds a PullRequest """
 
         self.__dict__ = pull_request
         self.client = client
+        self.lgtm_text = lgtm_text
 
         self.__dict__.update(self.__get_full_request())
 
@@ -106,15 +103,19 @@ class PullRequest(object):
         "lgtmed" the request. Returns true if so, None otherwise.
         """
 
+        lgtm_re = re.compile("^%s$" % self.lgtm_text, re.I)
+        rejected_re = re.compile("rejecting")
+
+
         lgtms = []
         rejected = [c for c
                       in self.discussion
-                      if REJECTED_RE.search(c.get('body', ''))]
+                      if rejected_re.search(c.get('body', ''))]
 
         for comment in self.discussion:
             try:
                 if comment['user']['login'] in approvers and \
-                   LGTM_RE.match(comment.get('body', "")):
+                   lgtm_re.match(comment.get('body', "")):
                     lgtms.append(comment)
             except TypeError:
                 continue

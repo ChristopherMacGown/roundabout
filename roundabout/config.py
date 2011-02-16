@@ -16,29 +16,21 @@
 
 """ roundabout config singleton """
 import re
-import yaml
+import json
+
+
+DEFAULTS = ("roundabout.cfg",        # Sane Defaults
+            "/etc/roundabout.cfg",   # Site level configs
+            "~/.roundabout.cfg")     # Are we running as a user?
 
 SECTION_KEY_RE = re.compile("(?P<section>.*?)_(?P<key>.*)")
 
-def parse_config_yaml(cfg):
-    """ Lazy load yaml and try to load a configuration """
-
-    try:
-        return yaml.load(cfg)  # Returns None which sucks.
-    except yaml.parser.ParserError as e:
-        raise ValueError(e.args)
-
-
-def parse_config_json(cfg):
-    """ Lazy load json and try to decode the configuration """
-
-    import json
-    return json.JSONDecoder().decode(cfg)
 
 def _get_key(key):
     """ Return the section and key from a blah_somekey configuration entry """
     match = SECTION_KEY_RE.match(key)
     return match.group('section'), match.group('key')
+
 
 class ConfigError(Exception):
     """ A config error """
@@ -46,7 +38,7 @@ class ConfigError(Exception):
 
 
 class Config(object):
-    """ Borg style Config object, the shared state is only initialized once.
+    """
     All configuration options are set as properties on this object with in
     the format of sectionname_key.
 
@@ -54,28 +46,24 @@ class Config(object):
        {"server": {"hostname": "somehost"}} -> Config().server_hostname
     """
 
-    __default_configs = ("roundabout.cfg",        # Sane Defaults
-                         "/etc/roundabout.cfg",   # Site level configs
-                         "~/.roundabout.cfg")     # Are we running as a user?
-    __shared_state__ = {}
+    def __init__(self, config_files=DEFAULTS):
+        for config_file in config_files:
+            try:
+                with open(config_file) as fp:
+                    self.__dict__.update(json.load(fp))
+            except (TypeError, ValueError, IOError):
+                pass
 
-    def __new__(cls, config_files=__default_configs): #pylint: disable=W0613
-        self = object.__new__(cls)
-        self.__dict__ = cls.__shared_state__
-        return self
-
-    def __init__(self, config_files=__default_configs):
         if not self.__dict__:
-            for config_file in config_files:
-                self._parse_config_file(config_file)
-
-            if not self.__dict__:
-                raise ConfigError("Didn't find configuration files, bailing.")
+            raise ConfigError("Didn't find configuration files, bailing.")
 
     def __getattr__(self, item):
-        section, key = _get_key(item)
-        section_dict = self.__dict__.get(section, {})
-        return section_dict.get(key, None)
+        try:
+            section, key = _get_key(item)
+            section_dict = self.__dict__.get(section, {})
+            return section_dict.get(key, None)
+        except (AttributeError, ValueError):
+            return None
 
     def update(self, key, value):
         """ Update the config and write it to disk """
@@ -84,24 +72,10 @@ class Config(object):
         section, key = _get_key(key)
         self.__dict__[section][key] = value
         with open('roundabout.cfg', 'w') as fp:
-            yaml.dump(self.__dict__, fp, default_flow_style=False)
+            json.dump(self.__dict__, fp, indent=4)
 
     def _parse_config_file(self, config_file):
-        """ Parses a configuration file as a dict and populates __dict__
-        with them. __dict__ is Config.__shared_state
+        """
+        Parses a configuration file as a dict and populates __dict__ with them.
         """
 
-        parsers = (parse_config_json, parse_config_yaml)
-
-        try:
-            with open(config_file) as fp:
-                cfg = fp.read()
-                for parser in parsers:
-                    try:
-                        self.__dict__.update(parser(cfg))
-                        if self.__dict__:
-                            break
-                    except (ValueError, ImportError):
-                        pass
-        except (AttributeError, TypeError, IOError):
-            pass

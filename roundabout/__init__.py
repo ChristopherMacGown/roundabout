@@ -14,7 +14,11 @@ from roundabout import hudson
 
 
 def main(command, options):
-    daemon = roundabout.daemon.Daemon(pidfile='roundabout.pid')
+    """ Function called by bin/roundabout """
+    config_files = options.get('config_file', roundabout.config.DEFAULTS)
+    config = roundabout.config.Config(config_files=config_files)
+    daemon = roundabout.daemon.Daemon(
+                pidfile=config.get('default_pidfile','roundabout.pid'))
 
     if command == 'start':
         log.info("Daemonizing")
@@ -31,13 +35,16 @@ def main(command, options):
         pass
 
     try:
-        run()
+        run(config)
     except KeyboardInterrupt:
         sys.exit(0)
 
-def run():
+def run(config):
+    """ 
+    Run roundabout forever or until you kill it.
+    """
+
     while True:
-        config = roundabout.config.Config()
         github = roundabout.github.client.Client(config)
 
         pull_requests = github.pull_requests
@@ -75,7 +82,7 @@ def run():
                         continue
 
                 git.push(git.local_branch_name)
-                build = hudson.Job.spawn_build(git.local_branch_name)
+                build = hudson.Job.spawn_build(git.local_branch_name, config)
                 while not build.complete:
                     log.info("Job not complete, sleeping for 30 seconds...")
                     time.sleep(30)

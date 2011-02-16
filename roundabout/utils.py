@@ -1,3 +1,8 @@
+"""
+Utility functions for roundabout
+"""
+
+
 import json
 import os
 import optparse
@@ -38,5 +43,5 @@ def update_config(config_file):
             with open(config_file, "w") as out:
                 log.info("Writing %s" % config_file)
                 json.dump(yaml.load(bak), out, indent=4)
-    except yaml.YAMLError, e:
+    except yaml.YAMLError:
         log.info("Couldn't read a yaml file, so nothing needed to be done")

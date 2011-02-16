@@ -2,7 +2,7 @@ import json
 import time
 import unittest
 from roundabout.config import Config
-from roundabout.github.client import Client, REJECTED_RE
+from roundabout.github.client import Client
 from tests import utils
 
 
@@ -42,14 +42,12 @@ class StubbedGithub(Client):
 class GithubClientTestCase(unittest.TestCase):
     def setUp(self):
         self.t = time.time()
-        utils.reset_config()
         self.config = Config()
         self.client = Client(conn_class=FakeGithub,
                              config=self.config)
 
     def tearDown(self):
         print "%s: %f" % (self.id(), time.time() - self.t)
-        utils.reset_config()
 
     def expect(self, ev):
         self.client.github.expected_value = ev

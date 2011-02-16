@@ -12,7 +12,6 @@ class HudsonTestCase(utils.TestHelper):
 
     def tearDown(self):
         print "%s: %f" % (self.id(), time.time() - self.t)
-        utils.reset_config()
 
     def test_get_spawn_build(self):
         class FakeHudson(object):
@@ -24,7 +23,7 @@ class HudsonTestCase(utils.TestHelper):
             def read(self):
                 return json.JSONEncoder().encode(self.expected)
         
-        job = Job.spawn_build('test_branch', opener=FakeHudson)
+        job = Job.spawn_build('test_branch', self.config, opener=FakeHudson)
         self.assertTrue(job.number)
 
     def test_get_spawn_build_gets_into_the_sleep(self):
@@ -41,16 +40,18 @@ class HudsonTestCase(utils.TestHelper):
 
         time.sleep = fake_sleep
         try:
-            self.assertCalled(time.sleep, Job.spawn_build, 'test_branch', opener=FakeHudson)
+            self.assertCalled(time.sleep,
+                              Job.spawn_build,
+                              'test_branch', self.config, opener=FakeHudson)
         except RuntimeError:
             pass
 
     def test_get_job_data(self):
-        job = Job()
+        job = Job(self.config)
         self.assertTrue(job.properties)
 
     def test_build_success(self):
-        job = Job()
+        job = Job(self.config)
         build1 = [b for b in job.builds if b.number == 1][0]
         build2 = [b for b in job.builds if b.number == 2][0]
 

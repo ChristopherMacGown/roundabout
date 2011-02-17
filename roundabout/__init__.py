@@ -19,20 +19,20 @@ def main(command, options):
     config_files = options.config_file or roundabout.config.DEFAULTS
     config = roundabout.config.Config(config_files=config_files)
     daemon = roundabout.daemon.Daemon(
-                stdout='roundabout.log',
-                pidfile=config.default_pidfile or 'roundabout.pid')
+                stdout="roundabout.log",
+                pidfile=config.default_pidfile or "roundabout.pid")
 
-    if command == 'start':
+    if command == "start":
         log.info("Daemonizing")
         daemon.start()
-    elif command == 'stop':
+    elif command == "stop":
         log.info("Terminating")
         daemon.stop()
         sys.exit(0)
-    elif command == 'restart':
+    elif command == "restart":
         daemon.stop()
         daemon.start()
-    elif command == 'run':
+    elif command == "run":
         #todo(chris): logs write to stdout
         pass
 
@@ -57,6 +57,7 @@ def run(config):
         if not pull_requests:
             log.info("No work to do, sleeping.")
             time.sleep(30)
+            continue
 
         for url, pull_request in pull_requests:
             log.info("processing %s" % url)
@@ -70,7 +71,7 @@ def run(config):
             with repo as git:
                 log.info("Cloning to %s" % repo.clonepath)
                 try:
-                    git.merge('master')
+                    git.merge("master")
                 except git_client.GitException, e:
                     pull_request.close(git_client.MERGE_FAIL_MSG % e)
                     continue
@@ -91,12 +92,12 @@ def run(config):
                     build.reload()
 
                 # return to master
-                git.branch('master').checkout()
+                git.branch("master").checkout()
 
                 if build:
                     # Successful build, good coverage, and clean pylint.
                     git.merge(git.local_branch_name)
-                    git.push('master')
+                    git.push("master")
                     pull_request.close(git_client.BUILD_SUCCESS_MSG)
                 else:
                     pull_request.close(

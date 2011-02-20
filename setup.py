@@ -8,4 +8,5 @@ setup(name='roundabout',
       author_email='roundabout-dev@googlegroups.com',
       url='',
       packages=['roundabout', 'roundabout/github'],
+      scripts = ['bin/roundabout'],
       install_requires=["coverage", "nose", "github2", "gitpython"])

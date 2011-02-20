@@ -17,7 +17,7 @@ def main(command, options):
     """ Function called by bin/roundabout """
 
     config_files = options.config_file or roundabout.config.DEFAULTS
-    config = roundabout.config.Config(config_files=config_files)
+    config = roundabout.config.Config(config_files=[config_files])
     daemon = roundabout.daemon.Daemon(
                 stdin="roundabout.log",
                 stdout="roundabout.log",
@@ -58,6 +58,7 @@ def run(config):
 
         if not pull_requests:
             log.info("No work to do, sleeping.")
+            print config.__dict__
             time.sleep(30)
             continue
 
@@ -66,7 +67,8 @@ def run(config):
 
             repo = git_client.Git(remote_name=pull_request.remote_name,
                                   remote_url=pull_request.remote_url,
-                                  remote_branch=pull_request.remote_branch)
+                                  remote_branch=pull_request.remote_branch,
+                                  config=config)
 
             # Create a remote, fetch it, checkout the branch
 

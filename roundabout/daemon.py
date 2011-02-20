@@ -47,11 +47,7 @@ class Daemon(object):
 
     def __rebind(self):
         """ Rebind stdin/stderr/stdout """
-        for fd in [sys.stdin, sys.stderr, sys.stdout]:
-            try:
-                fd.close()
-            except IOError:
-                pass
+        [f.close() for f in [sys.stdin, sys.stderr, sys.stdout]]
 
         os.open(self.stdin, os.O_RDONLY)
         os.open(self.stdout, os.O_WRONLY)
@@ -80,5 +76,5 @@ class Daemon(object):
                     os.kill(int(pid), signal.SIGTERM)
                 except ValueError:
                     return None
-        except OSError:
+        except (IOError, OSError):
             return None

@@ -57,6 +57,8 @@ class Config(object):
         if not self.__dict__:
             raise ConfigError("Didn't find configuration files, bailing.")
 
+        self.config_file = config_files[0]
+
     def __getattr__(self, item):
         try:
             section, key = _get_key(item)
@@ -67,12 +69,15 @@ class Config(object):
 
     def update(self, key, value):
         """ Update the config and write it to disk """
-        # todo(chris): Either generalize this for json/yaml or throw one away.
 
         section, key = _get_key(key)
         self.__dict__[section][key] = value
-        with open('roundabout.cfg', 'w') as fp:
-            json.dump(self.__dict__, fp, indent=4)
+
+        updated_dict = self.__dict__.copy()
+        updated_dict.pop('config_file')
+
+        with open(self.config_file, 'w') as fp:
+            json.dump(updated_dict, fp, indent=4)
 
     def _parse_config_file(self, config_file):
         """

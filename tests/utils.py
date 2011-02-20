@@ -30,3 +30,12 @@ class TestHelper(unittest.TestCase):
         bound_method = was_called(bound_method)
         caller(*args, **kwargs)
         self.assertTrue(bound_method)
+
+    def assertNothingRaised(self, caller, *args, **kwargs):
+        raised=None
+        try:
+            caller(*args, **kwargs)
+        except Exception:
+            raised=True
+
+        self.assertFalse(raised)

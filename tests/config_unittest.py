@@ -1,12 +1,13 @@
+import json
 import time
 import unittest
 from roundabout.config import Config, ConfigError
 from tests import utils 
 
 
-class ConfigTestCase(unittest.TestCase):
-    _test_bad_config_file = "tests/data/bad.cfg"
-    _test_good_config_file = "tests/data/good.cfg"
+class ConfigTestCase(utils.TestHelper):
+    _test_bad_config_file = utils.testdata("bad.cfg")
+    _test_good_config_file = utils.testdata("good.cfg")
 
     def setUp(self):
         self.t = time.time()
@@ -17,7 +18,13 @@ class ConfigTestCase(unittest.TestCase):
     def test_that_underunder_getattr_returns_sanity(self):
         config = Config(config_files=[self._test_good_config_file])
         self.assertEqual(config.__getattr__('nothing_here'), None)
+        self.assertEqual(config.__getattr__('nothing or here'), None)
         self.assertEqual(config.__getattr__('test_attribute'), 12345)
+
+
+    def test_that_update_works(self):
+        config = Config(config_files=[utils.testdata("fake.cfg")])
+        self.assertCalled(json.dump, config.update, 'test_attribute', 100)
 
     def test_that_parsing_works(self):
         config = Config(config_files=[self._test_good_config_file])

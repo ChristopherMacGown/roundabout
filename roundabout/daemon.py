@@ -49,9 +49,9 @@ class Daemon(object):
         """ Rebind stdin/stderr/stdout """
         [f.close() for f in [sys.stdin, sys.stderr, sys.stdout]]
 
-        os.open(self.stdin, os.O_RDONLY)
-        os.open(self.stdout, os.O_WRONLY)
-        os.open(self.stderr, os.O_WRONLY)
+        sys.stdin = os.open(self.stdin, os.O_RDONLY)
+        sys.stderr = os.open(self.stdout, os.O_WRONLY)
+        sys.stdout = os.open(self.stderr, os.O_WRONLY)
 
     def remove_pidfile(self):
         """ Remove the pidfile """

@@ -19,7 +19,9 @@ def main(command, options):
     config_files = options.config_file or roundabout.config.DEFAULTS
     config = roundabout.config.Config(config_files=config_files)
     daemon = roundabout.daemon.Daemon(
+                stdin="roundabout.log",
                 stdout="roundabout.log",
+                stderr="roundabout.log",
                 pidfile=config.default_pidfile or "roundabout.pid")
 
     if command == "start":

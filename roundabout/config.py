@@ -19,10 +19,7 @@ import re
 import json
 
 
-DEFAULTS = ("roundabout.cfg",        # Sane Defaults
-            "/etc/roundabout.cfg",   # Site level configs
-            "~/.roundabout.cfg")     # Are we running as a user?
-
+DEFAULT = "roundabout.cfg"
 SECTION_KEY_RE = re.compile("(?P<section>.*?)_(?P<key>.*)")
 
 
@@ -46,18 +43,17 @@ class Config(object):
        {"server": {"hostname": "somehost"}} -> Config().server_hostname
     """
 
-    def __init__(self, config_files=DEFAULTS):
-        for config_file in config_files:
-            try:
-                with open(config_file) as fp:
-                    self.__dict__.update(json.load(fp))
-            except (TypeError, ValueError, IOError):
-                pass
+    def __init__(self, config_file):
+        try:
+            with open(config_file) as fp:
+                self.__dict__.update(json.load(fp))
+        except (TypeError, ValueError, IOError):
+            pass
 
         if not self.__dict__:
             raise ConfigError("Didn't find configuration files, bailing.")
 
-        self.config_file = config_files[0]
+        self.config_file = config_file
 
     def __getattr__(self, item):
         try:

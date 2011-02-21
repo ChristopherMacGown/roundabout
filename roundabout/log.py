@@ -3,25 +3,29 @@
 import logging
 import logging.handlers
 import time
-from roundabout.config import Config, ConfigError
 
-
-try:
-    CONFIG = Config()
-    LOG_LEVEL = CONFIG.default_log_level or logging.DEBUG
-    LOG_HANDLER = logging.handlers.RotatingFileHandler(CONFIG.default_logfile,
-                                                       backupCount=5)
-except ConfigError:
-    LOG_LEVEL = logging.DEBUG
-    LOG_HANDLER = logging.StreamHandler()
 
 LOGGER = logging.getLogger(name="roundabout")
-LOGGER.setLevel(LOG_LEVEL)
-LOGGER.addHandler(LOG_HANDLER)
+
+
+def init_logger(config, stream=False):
+    log_level = logging.DEBUG 
+
+    if stream:
+        handler = logging.StreamHandler()
+    else:
+        log_level = config.default_log_level or log_level
+        handler = logging.handlers.RotatingFileHandler(config.default_logfile,
+                                                       backupCount=5)
+
+    LOGGER.setLevel(log_level)
+    LOGGER.addHandler(handler)
+
 
 def info(message):
     """ Log the message at info level. """
     LOGGER.info("[%s] %s" % (time.strftime("%d-%m-%Y %H:%M:%S"), message))
+
 
 def error(message):
     """ Log the message at error level. """

@@ -16,27 +16,26 @@ from roundabout import hudson
 def main(command, options):
     """ Function called by bin/roundabout """
 
-    config_files = options.config_file or roundabout.config.DEFAULTS
-    config = roundabout.config.Config(config_files=[config_files])
-    daemon = roundabout.daemon.Daemon(
-                stdin="roundabout.log",
-                stdout="roundabout.log",
-                stderr="roundabout.log",
-                pidfile=config.default_pidfile or "roundabout.pid")
+    config_file = options.config_file or roundabout.config.DEFAULT
+    config = roundabout.config.Config(config_file)
+    if command == "run": 
+        log.init_logger(config, stream=True)
+    else:
+        log.init_logger(config)
 
-    if command == "start":
-        log.info("Daemonizing")
-        daemon.start()
-    elif command == "stop":
-        log.info("Terminating")
-        daemon.stop()
-        sys.exit(0)
-    elif command == "restart":
-        daemon.stop()
-        daemon.start()
-    elif command == "run":
-        #todo(chris): logs write to stdout
-        pass
+        daemon = roundabout.daemon.Daemon(
+                    stdin="roundabout.log",
+                    stdout="roundabout.log",
+                    stderr="roundabout.log",
+                    pidfile=config.default_pidfile or "roundabout.pid")
+
+        if command == "start":
+            daemon.start()
+        elif command == "stop":
+            daemon.stop()
+            sys.exit(0)
+        elif command == "restart":
+            daemon.restart()
 
     try:
         run(config)
@@ -51,14 +50,17 @@ def run(config):
     while True:
         github = roundabout.github.client.Client(config)
 
-        pull_requests = github.pull_requests
-        pull_requests = [(u, p) for u, p
-                                in pull_requests.items()
-                                if p.lgtm(github.approvers)]
+        try:
+            pull_requests = github.pull_requests
+            pull_requests = [(u, p) for u, p
+                                    in pull_requests.items()
+                                    if p.lgtm(github.approvers)]
+        except RuntimeError, e:
+            log.error("Unexpected response from github:\n %s" % e.__str__())
+            pull_requests = []
 
         if not pull_requests:
             log.info("No work to do, sleeping.")
-            print config.__dict__
             time.sleep(30)
             continue
 

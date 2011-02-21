@@ -6,6 +6,8 @@ import os
 import signal
 import sys
 
+from roundabout import log
+
 
 def _fork(num):
     """ Fork ourselves. """
@@ -61,20 +63,30 @@ class Daemon(object):
         """ wire up signal callbacks """
         signal.signal(signal.SIGTERM, self.remove_pidfile)
 
+    def restart(self):
+        self.stop()
+        self.start()
+
     def start(self):
         """ detach from the parent, decouple everything, and rebind """
+        log.info("Starting roundabout...")
         _fork(1) and _decouple()
         _fork(2) and self.__rebind()
         self.__write_pid_file(os.getpid())
+        log.info("Done")
 
     def stop(self):
         """ Read the pidfile for the process ID of the daemon and kill it """
         try:
+            log.info("Stopping roundabout...")
             with open(self.pidfile, 'r') as fd:
                 pid = fd.read()
                 try:
                     os.kill(int(pid), signal.SIGTERM)
+                    log.info("Done...")
                 except ValueError:
+                    log.info("Couldn't stop roundabout...")
                     return None
         except (IOError, OSError):
+            log.info("Couldn't stop roundabout...")
             return None

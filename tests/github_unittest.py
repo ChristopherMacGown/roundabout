@@ -1,6 +1,9 @@
 import json
 import time
 import unittest
+
+import roundabout.config
+
 from roundabout.config import Config
 from roundabout.github.client import Client
 from tests import utils
@@ -42,7 +45,7 @@ class StubbedGithub(Client):
 class GithubClientTestCase(unittest.TestCase):
     def setUp(self):
         self.t = time.time()
-        self.config = Config()
+        self.config = Config(roundabout.config.DEFAULT)
         self.client = Client(conn_class=FakeGithub,
                              config=self.config)
 
@@ -53,7 +56,7 @@ class GithubClientTestCase(unittest.TestCase):
         self.client.github.expected_value = ev
 
     def test_proper_assimilation(self):
-        local_client = Client(config=Config(), conn_class=FakeGithub)
+        local_client = Client(config=self.config, conn_class=FakeGithub)
         self.assertTrue(self.client.__dict__ is local_client.__dict__)
         self.assertFalse(self.client == local_client)
 
@@ -66,13 +69,13 @@ class GithubClientTestCase(unittest.TestCase):
         self.assertTrue(self.client.branches)
 
     def test_github_pull_requests(self):
-        client = StubbedGithub(config=Config(), conn_class=FakeGithub)
+        client = StubbedGithub(config=self.config, conn_class=FakeGithub)
         client.config.github_core_team = "test team 1"
         pull_requests = client.pull_requests
         self.assertTrue(pull_requests)
 
     def test_lgtm(self):
-        client = StubbedGithub(config=Config(), conn_class=FakeGithub)
+        client = StubbedGithub(config=self.config, conn_class=FakeGithub)
         client.config.github_core_team = "test team 1"
 
         def test_lgtm_without_reject():
@@ -107,7 +110,7 @@ class GithubClientTestCase(unittest.TestCase):
 
 
     def test_github_approvers(self):
-        client = StubbedGithub(config=Config(), conn_class=FakeGithub)
+        client = StubbedGithub(config=self.config, conn_class=FakeGithub)
         client.config.github_core_team = "test team 1"
         self.assertTrue(u'larsbutler' in client.approvers)
 
@@ -127,7 +130,7 @@ class GithubClientTestCase(unittest.TestCase):
             def __init__(self, dictionary):
                 self.__dict__ = dictionary
 
-        client = StubbedGithub(config=Config(), conn_class=FakeGithub)
+        client = StubbedGithub(config=self.config, conn_class=FakeGithub)
         client.config.github_core_team = "test team 1"
         pull_request = client.pull_requests.values()[0]
 
@@ -175,7 +178,7 @@ class GithubClientTestCase(unittest.TestCase):
         self.assertEqual(u'open', issue.state)
         
         # TODO(LB): need to mock up github here as well; see test_comment()
-        client = StubbedGithub(config=Config(), conn_class=FakeGithub)
+        client = StubbedGithub(config=self.config, conn_class=FakeGithub)
         client.config.github_core_team = "test team 1"
         pull_request = client.pull_requests.values()[0]
 

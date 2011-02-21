@@ -10,7 +10,7 @@ from tests import utils
 class GitTestCase(utils.TestHelper):
     def setUp(self):
         self.t = time.time()
-        config = Config(config_files=[utils.testdata('good_git.cfg')])
+        config = Config(config_file=utils.testdata('good_git.cfg'))
         remote_name = config.test_remote_name
         remote_url = config.test_remote_url
         remote_branch = config.test_remote_branch
@@ -80,7 +80,7 @@ class GitTestCase(utils.TestHelper):
         self.assertTrue(result)
 
     def test_clone_repo_with_bad_config(self):
-        config = Config(config_files=[utils.testdata('bad_git.cfg')])
+        config = Config(config_file=utils.testdata('bad_git.cfg'))
         remote_name = config.test_remote_name
         remote_url = config.test_remote_url
         remote_branch = config.test_remote_branch

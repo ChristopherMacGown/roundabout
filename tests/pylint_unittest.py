@@ -1,3 +1,4 @@
+import json
 from roundabout import config
 from roundabout import pylint 
 from tests import utils
@@ -8,3 +9,8 @@ class PylintTestCase(utils.TestHelper):
         cfg = config.Config(config_files=[utils.testdata('pylint.cfg')])
         p = pylint.Pylint(['tests'], config=cfg)
         self.assertTrue(p)
+
+        with open(utils.testdata('pylint.cfg'), "w") as mock:
+            json.dump({"pylint": {
+                        "current_score": 1000, 
+                        "max_score": 10000}}, mock)

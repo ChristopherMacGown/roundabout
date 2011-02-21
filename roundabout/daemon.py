@@ -38,6 +38,7 @@ class Daemon(object):
         self.stdin = stdin
         self.stdout = stdout
         self.stderr = stderr
+        self.handle_signals()
 
     def __write_pid_file(self, pid):
         """ Write our process id to the pidfile """

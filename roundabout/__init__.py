@@ -81,7 +81,7 @@ def run(config):
                 git.branch("master").checkout()
                 try:
                     git.merge(git.remote_branch,
-                              --squash=config.git_squash_merges)
+                              squash=config.git_squash_merges)
                 except git_client.GitException, e:
                     pull_request.close(git_client.MERGE_FAIL_MSG % e)
                     continue

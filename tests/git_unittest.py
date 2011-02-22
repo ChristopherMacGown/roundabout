@@ -1,3 +1,4 @@
+import os
 import git
 import time
 import unittest
@@ -37,6 +38,24 @@ class GitTestCase(utils.TestHelper):
         with self.repo as repo:
             self.assertTrue(repo.merge('master'))
             self.assertTrue(repo.branch('master').checkout())
+
+    def test_clean_squash_merge_with_good_Config(self):
+        branch = self.repo.remote_branch
+        self.repo.repo.create_head(branch)
+        self.repo.branch(branch).checkout()
+
+        curdir = os.getcwd()
+        os.chdir(self.repo.clonepath)
+        print self.repo.clonepath
+
+        with open("testfile", "w") as test:
+            test.write("this is just a test")
+        
+        self.repo.repo.git.execute(('git', 'add', 'testfile'))
+        self.repo.repo.git.execute(("git", "commit", "-m", "test_commit"))
+        self.repo.branch("master").checkout()
+        self.assertTrue(self.repo.merge(branch, squash=True))
+        os.chdir(curdir)
 
     def test_merge_fails_for_some_reason_should_raise(self):
         class FakeGit(git.Repo):

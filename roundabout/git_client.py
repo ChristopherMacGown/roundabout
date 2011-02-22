@@ -43,7 +43,6 @@ class Git(object):
 
     def __enter__(self):
         self.remote.fetch()
-        self.repo.git.checkout(self.remote_branch, b=self.local_branch_name)
         return self
 
     def __exit__(self, *args):
@@ -87,7 +86,9 @@ class Git(object):
             self.repo.head.reset(working_tree=True)
             raise GitException(e)
 
-    def push(self, branch, remote='origin'):
+    def push(self, branch, remote='origin', remote_branch=None):
         """ Push the branch up to the remote """
+        if remote_branch:
+            branch = "%s:%s" % (branch, remote_branch)
         log.info("pushing %s to %s" % (branch, remote))
         return self.repo.remote(remote).push(branch)

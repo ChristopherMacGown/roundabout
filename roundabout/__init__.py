@@ -76,8 +76,12 @@ def run(config):
 
             with repo as git:
                 log.info("Cloning to %s" % repo.clonepath)
+
+                # Ensure we're on master
+                git.branch("master").checkout()
                 try:
-                    git.merge("master")
+                    git.merge(git.remote_branch,
+                              --squash=config.git_squash_merges)
                 except git_client.GitException, e:
                     pull_request.close(git_client.MERGE_FAIL_MSG % e)
                     continue
@@ -90,19 +94,17 @@ def run(config):
                         (py_res.previous_score, config.pylint_current_score))
                         continue
 
-                git.push(git.local_branch_name)
+                # push up a test branch
+                git.push("master", remote_branch=git.local_branch_name)
+
                 build = hudson.Job.spawn_build(git.local_branch_name, config)
                 while not build.complete:
                     log.info("Job not complete, sleeping for 30 seconds...")
                     time.sleep(30)
                     build.reload()
 
-                # return to master
-                git.branch("master").checkout()
-
                 if build:
                     # Successful build, good coverage, and clean pylint.
-                    git.merge(git.local_branch_name)
                     git.push("master")
                     pull_request.close(git_client.BUILD_SUCCESS_MSG)
                 else:

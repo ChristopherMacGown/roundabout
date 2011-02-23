@@ -94,7 +94,7 @@ class Git(object):
                             self.repo.active_branch.name)
 
                 commit_cmd = ['git', 'commit', '-m']
-                commit_cmd.append('"%s"' % message)
+                commit_cmd.append(message)
                 return self.repo.git.execute(tuple(commit_cmd))
             else:
                 return self.repo.git.execute(merge_cmd)

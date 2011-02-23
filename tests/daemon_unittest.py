@@ -84,6 +84,7 @@ class DaemonTestCase(utils.TestHelper):
         def fake_exit(*args):
             return True
 
+        decouple = daemon._decouple
         os.fork = fake_fork
         sys.exit = fake_exit
         daemon.Daemon._Daemon__rebind = fake_fork
@@ -94,6 +95,26 @@ class DaemonTestCase(utils.TestHelper):
         self.assertCalled(daemon._decouple, d.start)
         self.assertTrue(os.path.isfile(d.pidfile))
         d.remove_pidfile()
+        daemon._decouple = decouple
+
+    def test_restart_calls_start_and_stop(self):
+        def fake_fork():
+            return True
+        def fake_exit(*args):
+            return True
+        def fake_kill(*args):
+            return True
+
+        decouple = daemon._decouple
+        os.fork = fake_fork
+        sys.exit = fake_exit
+        daemon.Daemon._Daemon__rebind = fake_fork
+        daemon._decouple = fake_fork
+
+        d = daemon.Daemon(pidfile="/tmp/pidfile")
+        self.assertCalled(daemon.Daemon.start, d.restart)
+        self.assertCalled(daemon.Daemon.stop, d.restart)
+        daemon._decouple = decouple
 
     def test_kill_calls_oskill_and_doesnt_raise(self):
         def fake_kill(*args):

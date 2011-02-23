@@ -43,7 +43,6 @@ class Git(object):
 
     def __enter__(self):
         self.remote.fetch()
-        self.repo.git.checkout(self.remote_branch, b=self.local_branch_name)
         return self
 
     def __exit__(self, *args):
@@ -76,18 +75,30 @@ class Git(object):
         except OSError, e:
             raise GitException(e)
 
-    def merge(self, branch):
+    def merge(self, branch, squash=None, message=None):
         """ Merge the passed in branch with HEAD """
 
         log.info("merging %s into %s" % (branch, self.repo.active_branch.name))
+        merge_cmd = ('git', 'merge', branch)
         try:
-            return self.repo.git.execute(('git', 'merge', branch))
+            if squash:
+                if not message:
+                    message = '"$(cat %s/.git/SQUASH_MSG)"' % self.clonepath
+                squash_cmd = tuple(list(merge_cmd) + ['--squash'])
+                commit_cmd = ['git', 'commit', '-m']
+                commit_cmd.append(message)
+                self.repo.git.execute(squash_cmd)
+                return self.repo.git.execute(tuple(commit_cmd))
+            else:
+                return self.repo.git.execute(merge_cmd)
         except git.exc.GitCommandError, e:
             # If there's a merge failure reset and raise.
             self.repo.head.reset(working_tree=True)
             raise GitException(e)
 
-    def push(self, branch, remote='origin'):
+    def push(self, branch, remote='origin', remote_branch=None):
         """ Push the branch up to the remote """
+        if remote_branch:
+            branch = "%s:%s" % (branch, remote_branch)
         log.info("pushing %s to %s" % (branch, remote))
         return self.repo.remote(remote).push(branch)

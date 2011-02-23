@@ -85,7 +85,7 @@ class Daemon(object):
                 try:
                     os.kill(int(pid), signal.SIGTERM)
                     log.info("Done...")
-                except ValueError:
+                except ValueError, e:
                     log.info("Couldn't stop roundabout...")
                     return None
         except (IOError, OSError):

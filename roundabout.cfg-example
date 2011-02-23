@@ -10,6 +10,7 @@
         "base_url": "YOUR HUDSON INSTANCE"
     }, 
     "git": {
+        "squash_merges": true
         "base_repo_url": "BASE REPO URL", 
         "local_repo_path": "/tmp/repos/roundabout"
     }, 
@@ -20,5 +21,10 @@
         "organization": "YOUR ORG", 
         "core_team": "YOUR CORE TEAM", 
         "req_per_second": 1
+    },
+    "pylint": {
+        "modules": ["YOUR PYLINT MODULES"],
+        "current_score": 100,
+        "max_score": 100000,
     }
 }

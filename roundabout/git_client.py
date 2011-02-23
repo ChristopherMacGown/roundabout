@@ -82,12 +82,19 @@ class Git(object):
         merge_cmd = ('git', 'merge', branch)
         try:
             if squash:
-                if not message:
-                    message = '"$(cat %s/.git/SQUASH_MSG)"' % self.clonepath
                 squash_cmd = tuple(list(merge_cmd) + ['--squash'])
-                commit_cmd = ['git', 'commit', '-m']
-                commit_cmd.append(message)
                 self.repo.git.execute(squash_cmd)
+
+                if not message:
+                    try:
+                        with open(self.clonepath + "/.git/SQUASH_MSG") as msg:
+                            message = msg.read()
+                    except IOError:
+                        message = "Squash merge %s into %s" % (branch,
+                            self.repo.active_branch.name)
+
+                commit_cmd = ['git', 'commit', '-m']
+                commit_cmd.append('"%s"' % message)
                 return self.repo.git.execute(tuple(commit_cmd))
             else:
                 return self.repo.git.execute(merge_cmd)

@@ -10,7 +10,7 @@
         "base_url": "YOUR HUDSON INSTANCE"
     }, 
     "git": {
-        "squash_merges": true
+        "squash_merges": true,
         "base_repo_url": "BASE REPO URL", 
         "local_repo_path": "/tmp/repos/roundabout"
     }, 

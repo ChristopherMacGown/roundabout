@@ -56,7 +56,7 @@ class Daemon(object):
         sys.stderr = os.open(self.stdout, os.O_WRONLY)
         sys.stdout = os.open(self.stderr, os.O_WRONLY)
 
-    def remove_pidfile(self):
+    def remove_pidfile(self, *args):
         """ Remove the pidfile """
         os.unlink(self.pidfile)
 

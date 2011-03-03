@@ -88,7 +88,7 @@ def run(config):
 
                 if config.pylint_modules:
                     py_res = pylint.Pylint(config.pylint_modules,
-                                           cfg=config, path=repo.clonepath)
+                                           config=config, path=repo.clonepath)
                     if not py_res:
                         pull_request.close(pylint.PYLINT_FAIL_MSG %
                         (py_res.previous_score, config.pylint_current_score))

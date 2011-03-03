@@ -25,7 +25,8 @@ class Pylint(object):
         higher than the previous score or the maximum.
         """
 
-        results = os.popen(PYLINT_CMD % (self.path, self.path,
+        results = os.popen(PYLINT_CMD % (self.path,
+                                         os.path.join(self.path, 'pylintrc'),
                                          str.join(' ', list(self.modules))))
         messages = [message for message in results.read().splitlines()]
         self.config.update('pylint_current_score', len(messages))

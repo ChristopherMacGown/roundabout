@@ -2,6 +2,8 @@ Summary:
 
 Roundabout is a mergebot which integrates Github and Hudson to test and disposition pull requests from Github forks.
 
+![roundabout workflow](roundabout.png)
+
  [dev, dev, dev] -> Pull Request -> LGTMED by core development team.
  
                                     (Roundabout picks it up)
@@ -32,7 +34,6 @@ success |            -------------------------------->          REJECT
     (close ticket)
 
 
-# TODO(chris): Put in a picture of the workflow.
 # TODO(chris): document this better.
 
 

@@ -4,34 +4,6 @@ Roundabout is a mergebot which integrates Github and Hudson to test and disposit
 
 ![roundabout workflow](https://github.com/ChristopherMacGown/roundabout/raw/master/roundabout.png)
 
- [dev, dev, dev] -> Pull Request -> LGTMED by core development team.
- 
-                                    (Roundabout picks it up)
-                                               |
-                                              \./
-
-                                        (clones core repo) 
-                                               
-                                               |
-   (merges pull_request branch into master) <--
-        |           |               fails
-success |            -------------------------------->          REJECT
-        |
-    [ if pylint is enabled ] (run pylint)                          |
-        |----------------------+     |                             |
-        |                             -----------------------------+
-        |                                                          |
-    ( push named branch to origin )                                |
-        |                                                          |
-    ( start hudson job and wait until it's done. )                 |
-        |                            |   job failed                |
-        |                             -----------------------------+
-        |           
-        |
-    ( push master to origin ) 
-        |
-        |
-    (close ticket)
 
 
 # TODO(chris): document this better.

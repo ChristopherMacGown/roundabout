@@ -21,13 +21,14 @@ class HudsonTestCase(utils.TestHelper):
             def __init__(self, *args):
                 self.expected = {'nextBuildNumber': 10,
                                  'builds': [
-                                     {'number': 10}
+                                     {'number': 10, 'url': 'http://fakeurl'}
                                   ]}
             def read(self):
                 return json.JSONEncoder().encode(self.expected)
         
         job = Job.spawn_build('test_branch', self.config, opener=FakeHudson)
         self.assertTrue(job.number)
+        self.assertTrue(job.url)
 
     def test_get_spawn_build_gets_into_the_sleep(self):
         class FakeHudson(object):

@@ -14,10 +14,8 @@ class Job(object):
         self.config = config
         self.url = "%s/job/%s/api/json?depth=1" % (config.hudson_base_url,
                                                    config.hudson_job)
-
         self.build_url = "%s/job/%s/buildWithParameters?branch=%s"
         self.opener = opener or urllib2.urlopen # Use a test opener or urllib2
-        log.info("Build URL: %s" % self.url)
 
     @classmethod
     def spawn_build(cls, branch, config, opener=None):
@@ -34,9 +32,9 @@ class Job(object):
             while True:
                 # Keep trying until we return something.
                 try:
-                    return [build for build 
-                                  in job.builds 
-                                  if build_id == build.number][0]
+                    build = [b for b in job.builds if build_id == b.number][0]
+                    log.info("Build URL: %s" % build.url)
+                    return build
                 except IndexError:
                     time.sleep(1)
 

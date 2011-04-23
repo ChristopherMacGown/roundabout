@@ -1,13 +1,12 @@
 """ Roundabout CI job module. """
 
-import json
-import base64
 import time
 import urllib2
 
 from roundabout import log
 
 class JobException(Exception):
+    """A Job Exception."""
     pass
 
 
@@ -45,10 +44,13 @@ class Job(object):
 
     @property
     def url(self):
+        """The Job url is the human-readable reference for the log or
+        pull-request."""
         raise NotImplementedError("Descendent classes should implement this")
 
     @property
     def complete(self):
+        """Whether or not the job is complete."""
         raise NotImplementedError("Descendent classes should implement this")
 
     @staticmethod

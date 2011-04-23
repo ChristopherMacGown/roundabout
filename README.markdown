@@ -19,11 +19,11 @@ a demo installation to test it.
 Installation:
 ==================
 
-  $ git clone git://github.com/ChristopherMacGown/roundabout.git
-  $ cd roundabout
-  $ cp roundabout{-example,}.cfg
-  $ vi roundabout.cfg # SEE Configuration
-  $ sudo python setup.py install
+    $ git clone git://github.com/ChristopherMacGown/roundabout.git
+    $ cd roundabout
+    $ cp roundabout{-example,}.cfg
+    $ vi roundabout.cfg # SEE Configuration
+    $ sudo python setup.py install
 
 
 Configuration:
@@ -44,68 +44,67 @@ sections:
 
 ## ci
 ### class: string
-   Lowercase name of the CI server you're using.
-   Valid options:
-       * hudson
-       * jenkins
+  Lowercase name of the CI server you're using.
+  Valid options:
+     * hudson
+     * jenkins
 ### username: string
-    The username for the CI api.
+  The username for the CI api.
 ### password: string
-    The password for the CI api.
+  The password for the CI api.
 ### job: string
-    I'm not certain this will be required in future CI servers, but hudson/jenkins
-    calls each project a job. This is the name of that project/job. In the *future*
-    should probably change to something more generic.
+  I'm not certain this will be required in future CI servers, but hudson/jenkins
+  calls each project a job. This is the name of that project/job. In the *future*
+  should probably change to something more generic.
 ### base_url: string
-    The base URL for the CI instance. For example: http://hudson.atomicpony.com
-
-##    "git": {
+  The base URL for the CI instance. For example: http://hudson.atomicpony.com
+## git
 ### squash_merges: boolean
-    Whether or not you want roundabout to merge --squash or not. If false, the
-    resulting merges will be interleaved. Otherwise will be squashed into a
-    single commit.
+  Whether or not you want roundabout to merge --squash or not. If false, the
+  resulting merges will be interleaved. Otherwise will be squashed into a
+  single commit.
 ### base_repo_url: string
-    The URL for the git repo. This doesn't need to be a github url, but the
-    user roundabout runs as *must* be able to write to this repo. Or things just
-    won't work.
+  The URL for the git repo. This doesn't need to be a github url, but the
+  user roundabout runs as *must* be able to write to this repo. Or things just
+  won't work.
 ### local_repo_path: string
-    The full repo to where roundabout will clone the pull request repos.
-##    "github": {
+  The full repo to where roundabout will clone the pull request repos.
+## github
 ### username: string
-    The github username with write permission to the repository.
+  The github username with write permission to the repository.
 ### api_token: string
-    The github API token for the above user.
+  The github API token for the above user.
 ### repo: string
-    The "account/repository" identifier for the repository. 
-    For example: "ChristopherMacGown/roundabout"
+  The "account/repository" identifier for the repository. 
+  For example: "ChristopherMacGown/roundabout"
 ### organization: string
-    In order to get the list of authorized 'lgtmers', roundabout requires an
-    organization with a team created. This is the name of the organization.
-    For Example: "atomicpony"
+  In order to get the list of authorized 'lgtmers', roundabout requires an
+  organization with a team created. This is the name of the organization.
+  For Example: "atomicpony"
 ### core_team: string
-    The organization team with the list of authorized 'lgtmers'.
-    For Example: "atomic pony core"
+  The organization team with the list of authorized 'lgtmers'.
+  For Example: "atomic pony core"
 ### req_per_second: integer
-    github's API rate limits incoming requests, so there's no point in increasing
-    this over 1. If it becomes possible to get a higher throughput on requests
-    per second, here's where you'd configure it.
+  github's API rate limits incoming requests, so there's no point in increasing
+  this over 1. If it becomes possible to get a higher throughput on requests
+  per second, here's where you'd configure it.
 ## pylint
-    This is an optional configuration option.
+  This is an optional configuration option.
 ### modules: array of strings
-    The list of modules you want to run pylint against. Syntax is identical to
-    pylint's command line interface.
+  The list of modules you want to run pylint against. Syntax is identical to
+  pylint's command line interface.
 ### current_score: integer
-    The current number of pylint violations. This should be set very high for the
-    first run if you don't know what the current_score will be on the system
-    running roundabout.
+  The current number of pylint violations. This should be set very high for the
+  first run if you don't know what the current_score will be on the system
+  running roundabout.
 
-    If this value is smaller than the value of max_score, any merge that has a
-    higher number of pylint violations than the current_score will fail.
+  If this value is smaller than the value of max_score, any merge that has a
+  higher number of pylint violations than the current_score will fail.
 ### max_score: integer
-    The maximum number of pylint violations you're willing to accept into your
-    code base. If this value is larger than the value of current_score, any
-    merge that has a higher number of pylint violations than the current_score
-    will fail.
+  The maximum number of pylint violations you're willing to accept into your
+  code base. If this value is larger than the value of current_score, any
+  merge that has a higher number of pylint violations than the current_score
+  will fail.
 
 Use:
 ==================
@@ -134,5 +133,6 @@ Required packages:
 * pylint==0.22.0
 
 If you want to run the unittests:
+
 * coverage
 * nose

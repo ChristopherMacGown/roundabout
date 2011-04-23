@@ -45,7 +45,9 @@ sections:
 ## ci
 ### class: string
   Lowercase name of the CI server you're using.
+
   Valid options:
+
      * hudson
      * jenkins
 ### username: string

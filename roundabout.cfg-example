@@ -3,7 +3,8 @@
         "logfile": "roundabout.log", 
         "lgtm": "lgtm"
     }, 
-    "hudson": {
+    "ci": {
+        "class": "YOUR CI INSTANCE (currently: hudson or jenkins)",
         "username": "HUDSON USERNAME", 
         "job": "JOB", 
         "password": "HUDSON PASSWORD", 

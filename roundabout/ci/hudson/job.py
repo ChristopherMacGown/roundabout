@@ -14,9 +14,10 @@ class Job(job.Job):
     """ A Hudson Job is a configuration for CI builds. """
     def __init__(self, config, opener=None):
         super(Job, self).__init__(config, opener)
-        self.url = "%s/job/%s/api/json?depth=1" % (config.ci_base_url,
-                                                   config.ci_job)
-        self.build_url = "%s/job/%s/buildWithParameters?branch=%s"
+
+        self.job_endpoint = "%s/job/%s/api/json?depth=1" % (config.ci_base_url,
+                                                            config.ci_job)
+        self.build_endpoint = "%s/job/%s/buildWithParameters?branch=%s"
 
     def __nonzero__(self):
         return bool(self.build)
@@ -29,8 +30,8 @@ class Job(job.Job):
         job = cls(config, opener=opener)
         log.info("Build starting: %s for %s" % (job.config.ci_job, branch))
 
-        if job.req(job.build_url % (job.config.ci_base_url,
-                                    job.config.ci_job, branch)):
+        if job.req(job.build_endpoint % (job.config.ci_base_url,
+                                         job.config.ci_job, branch)):
             build_id = job.properties['nextBuildNumber']
             while True:
                 # Keep trying until we return something.
@@ -38,22 +39,34 @@ class Job(job.Job):
                     job.build = [b for b 
                                    in job.builds
                                    if build_id == b.number][0]
-                    log.info("Build URL: %s" % job.build.url)
+                    log.info("Build URL: %s" % job.url)
                     return job
                 except IndexError:
                     time.sleep(1)
-
-    @property
-    def properties(self):
-        """ Return the JSON decoded properties for this job. """
-        return self.req(self.url, json_decode=True)
 
     @property
     def builds(self):
         """ Return the list of builds for this job. """
         return [build.Build(self, b) for b in self.properties['builds']]
 
+    @property
+    def properties(self):
+        """ Return the JSON decoded properties for this job. """
+        return self.req(self.job_endpoint, json_decode=True)
+
+    @property
+    def url(self):
+        """ Return the URL of our build """
+        return self.build.url
+
+    @property
+    def complete(self):
+        """ Return true if the build is complete """
+        return self.build.complete
+
     def reload(self):
+        """ call ci.job.Job.reload to sleep, then reload the build."""
+        super(Job, self).reload()
         return self.build.reload()
 
     def req(self, url, json_decode=False):

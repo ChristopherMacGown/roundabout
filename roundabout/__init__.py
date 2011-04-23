@@ -40,6 +40,10 @@ def main(command, options):
     try:
         run(config)
     except KeyboardInterrupt:
+        pass
+    except Exception, e:
+        log.error("Unknown error: %s" % e)
+    finally:
         sys.exit(0)
 
 def run(config):
@@ -61,6 +65,7 @@ def run(config):
 
         if not pull_requests:
             log.info("No work to do, sleeping.")
+            # todo(chris): Make this configurable. config.default_no_work_time
             time.sleep(30)
             continue
 
@@ -99,8 +104,6 @@ def run(config):
 
                 with ci.job.Job.spawn(git.local_branch_name, config) as job:
                     while not job.complete:
-                        log.info("Job not complete, sleeping for 30 seconds...")
-                        time.sleep(30)
                         job.reload()
 
                     if job:
@@ -108,5 +111,4 @@ def run(config):
                         git.push("master")
                         pull_request.close(git_client.BUILD_SUCCESS_MSG)
                     else:
-                        pull_request.close(
-                            git_client.BUILD_FAIL_MSG % build.url)
+                        pull_request.close(git_client.BUILD_FAIL_MSG % job.url)

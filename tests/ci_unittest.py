@@ -30,20 +30,31 @@ class CITestCase(utils.TestHelper):
     def tearDown(self):
         print "%s: %f" % (self.id(), time.time() - self.t)
 
-
     def test_register(self):
         self.assertNothingRaised(ci.job.Job.register, 'a', self.A)
         self.assertRaises(ci.job.JobException, ci.job.Job.register, 'b', self.B)
 
     def test_get_job_class(self):
-        self.assertRaises(ci.job.JobException, 
-                          ci.hudson.job.Job.get_ci_class, 'a')
-        self.assertEqual(ci.hudson.job.Job, ci.job.Job.get_ci_class('hudson'))
-        self.assertEqual(ci.hudson.job.Job, ci.job.Job.get_ci_class('jenkins'))
+        self.assertRaises(ci.job.JobException, ci.job.get_ci_class, 'a')
+        self.assertEqual(ci.hudson.job.Job, ci.job.get_ci_class('hudson'))
+        self.assertEqual(ci.hudson.job.Job, ci.job.get_ci_class('jenkins'))
 
     def test_raw_job_should_raise_on_nonzero(self):
         job = ci.job.Job(self.config)
         self.assertRaises(NotImplementedError, bool, job)
+
+    def test_reload_calls_sleep(self):
+        class FakeCI(FakeCIOpener):
+            __expected__ = {'nextBuildNumber': 10,
+                            'builds': [{'number': 10, 'url': 'http://fakeurl'}]}
+
+        def fake_sleep(seconds):
+            """ stub out time.sleep so we can make sure it's called """
+            pass
+
+        time.sleep = fake_sleep
+        job = ci.job.Job.spawn('test_branch', self.config, opener=FakeCI)
+        self.assertCalled(time.sleep, job.reload)
 
     def test_spawn(self):
         class FakeCI(FakeCIOpener):
@@ -73,6 +84,7 @@ class HudsonTestCase(utils.TestHelper):
 
         job = ci.job.Job.spawn('test_branch', self.config, opener=FakeCI)
         self.assertEqual(job.build, job.reload())
+        self.assertEqual(job.url, FakeCI.__expected__['builds'][0]['url'])
         self.assertEqual(job.build.url, FakeCI.__expected__['builds'][0]['url'])
         self.assertEqual(job.build.number, FakeCI.__expected__['builds'][0]['number'])
 
@@ -86,6 +98,7 @@ class HudsonTestCase(utils.TestHelper):
 
         job = ci.job.Job.spawn('test_branch', self.config, opener=FakeCI)
         self.assertTrue(bool(job))
+        self.assertTrue(job.reload())
 
     def test_waiting_build(self):
         class FakeCI(FakeCIOpener):
@@ -118,6 +131,7 @@ class HudsonTestCase(utils.TestHelper):
             """ stub out time.sleep so we can make sure it's called """
             raise RuntimeError(seconds)
 
+        old_sleep = time.sleep
         time.sleep = fake_sleep
         try:
             self.assertCalled(time.sleep,
@@ -125,16 +139,8 @@ class HudsonTestCase(utils.TestHelper):
                               'test_branch', self.config, opener=FakeCI)
         except RuntimeError:
             pass
+        time.sleep = old_sleep
 
     def test_get_job_data(self):
         job = ci.hudson.job.Job(self.config)
         self.assertTrue(job.properties)
-
-    def test_build_success(self):
-        job = ci.hudson.job.Job(self.config)
-        build1 = [b for b in job.builds if b.number == 1][0]
-        build2 = [b for b in job.builds if b.number == 2][0]
-
-        self.assertFalse(build1)
-        self.assertTrue(build2)
-        self.assertTrue(build2.reload())

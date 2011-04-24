@@ -10,9 +10,6 @@ from tests import utils
 
 class DaemonTestCase(utils.TestHelper):
     def setUp(self):
-        self.config = Config(roundabout.config.DEFAULT)
-
-    def setUp(self):
         self.t = time.time()
         self.fork = os.fork
         self.exit = sys.exit

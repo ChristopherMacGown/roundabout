@@ -16,10 +16,12 @@ class Client(object):
 
     def __init__(self, config, conn_class=Github):
         self.config = config
-        self.github = conn_class(username=config.github_username,
-                             api_token=config.github_api_token,
-                             requests_per_second=config.github_req_per_second)
-        self.organization = self.config.github_organization
+        self.github = conn_class(
+            username=config["github"]["username"],
+            api_token=config["github"]["api_token"],
+            requests_per_second=config["github"]["req_per_second"]
+        )
+        self.organization = self.config["github"]["organization"]
 
     def get(self, *args):
         """ Return a github request built from the *args """
@@ -31,7 +33,7 @@ class Client(object):
         Return a list of usernames permitted to approve a merge request
         """
 
-        core_team = self.config.github_core_team
+        core_team = self.config["github"]["core_team"]
         try:
             return [user['login'] for user in self.teams[core_team]['users']]
         except KeyError:
@@ -53,19 +55,19 @@ class Client(object):
     @property
     def issues(self):
         """ return the list of issues from the repo """
-        return self.github.issues.list(self.config.github_repo)
+        return self.github.issues.list(self.config["github"]["repo"])
 
     @property
     def branches(self):
         """ Return the list of branches from the repo """
-        return self.github.repos.branches(self.config.github_repo)
+        return self.github.repos.branches(self.config["github"]["repo"])
 
     @property
     def pull_requests(self):
         """ Return the list of pull_requests from the repo. """
-        p_reqs = [PullRequest(self, p, self.config.default_lgtm)
+        p_reqs = [PullRequest(self, p, self.config["default"]["lgtm"])
                   for p
-                  in self.get("pulls", self.config.github_repo)['pulls']]
+                  in self.get("pulls", self.config["github"]["repo"])['pulls']]
         return dict([(p.html_url, p) for p in p_reqs])
 
 
@@ -129,7 +131,7 @@ class PullRequest(object):
         """
 
         return self.client.get("pulls",
-                               self.client.config.github_repo,
+                               self.client.config["github"]["repo"],
                                str(self.number))['pull']
 
     def comment(self, message):
@@ -139,8 +141,8 @@ class PullRequest(object):
         Returns a dict representation of the comment.
         """
         log.info("commenting on %s: %s" % (self.number,  message))
-        return self.client.github.issues.comment(self.client.config.github_repo,
-                                                 self.number, message)
+        return self.client.github.issues.comment(
+                    self.client.config["github"]["repo"], self.number, message)
 
     def close(self, message):
         """
@@ -151,5 +153,5 @@ class PullRequest(object):
 
         self.comment(message)
         log.info("Closing %s" % self.html_url)
-        return self.client.github.issues.close(self.client.config.github_repo,
-                                               self.number)
+        return self.client.github.issues.close(
+                self.client.config["github"]["repo"], self.number)

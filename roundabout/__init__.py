@@ -27,7 +27,7 @@ def main(command, options):
                     stdin="roundabout.log",
                     stdout="roundabout.log",
                     stderr="roundabout.log",
-                    pidfile=config.default_pidfile or "roundabout.pid")
+                    pidfile=config["default"].get("pidfile", "roundabout.pid"))
 
         if command == "start":
             daemon.start()
@@ -65,7 +65,8 @@ def run(config):
 
         if not pull_requests:
             log.info("No work to do, sleeping.")
-            # todo(chris): Make this configurable. config.default_no_work_time
+            # todo(chris): Make this configurable.
+            # config["default"]["no_work_time"] or something
             time.sleep(30)
             continue
 
@@ -86,17 +87,18 @@ def run(config):
                 git.branch("master").checkout()
                 try:
                     git.merge(git.remote_branch,
-                              squash=config.git_squash_merges)
+                              squash=config["git"].get("squash_merges"))
                 except git_client.GitException, e:
                     pull_request.close(git_client.MERGE_FAIL_MSG % e)
                     continue
 
-                if config.pylint_modules:
-                    py_res = pylint.Pylint(config.pylint_modules,
+                if config["pylint"]:
+                    py_res = pylint.Pylint(config["pylint"]["modules"],
                                            config=config, path=repo.clonepath)
                     if not py_res:
-                        pull_request.close(pylint.PYLINT_FAIL_MSG %
-                        (py_res.previous_score, config.pylint_current_score))
+                        pull_request.close(
+                            pylint.PYLINT_FAIL_MSG % (py_res.previous_score,
+                                                      py_res.current_score))
                         continue
 
                 # push up a test branch

@@ -59,8 +59,8 @@ class Job(object):
         Create and return a paramaterized Job based on the CI config.
         """
 
-        cls = get_ci_class(config.ci_class)
-        log.info("Starting %s job" % config.ci_class)
+        cls = get_ci_class(config["ci"]["class"])
+        log.info("Starting %s job" % config["ci"]["class"])
 
         return cls.spawn(branch, config, opener)
 

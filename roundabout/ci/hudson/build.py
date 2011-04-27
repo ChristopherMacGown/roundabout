@@ -2,7 +2,6 @@
 
 class Build(object):
     """ A single build for a Hudson/Jenkins Job """
-
     #pylint: disable=E1101
 
     def __init__(self, job, _dict):

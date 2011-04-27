@@ -1,4 +1,4 @@
-from tests.config_unittest import ConfigTestCase
-from tests.git_unittest import GitTestCase
-from tests.github_unittest import GithubClientTestCase
-from tests.hudson_unittest import HudsonTestCase
+import tests.ci_unittest
+import tests.config_unittest
+import tests.git_unittest
+import tests.github_unittest

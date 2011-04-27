@@ -2,6 +2,7 @@ import os
 import os.path
 import sys
 import signal
+import time
 
 from roundabout import daemon
 from tests import utils
@@ -9,12 +10,14 @@ from tests import utils
 
 class DaemonTestCase(utils.TestHelper):
     def setUp(self):
+        self.t = time.time()
         self.fork = os.fork
         self.exit = sys.exit
 
     def tearDown(self):
         os.fork = self.fork
         sys.exit = self.exit
+        print "%s: %f" % (self.id(), time.time() - self.t)
 
     def test_that_a_successful__fork_calls_fork_and_exits(self):
         def fake_fork():

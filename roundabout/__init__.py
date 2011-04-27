@@ -10,7 +10,7 @@ import roundabout.github.client
 from roundabout import log
 from roundabout import git_client
 from roundabout import pylint
-from roundabout import hudson
+from roundabout import ci
 
 
 def main(command, options):
@@ -40,6 +40,10 @@ def main(command, options):
     try:
         run(config)
     except KeyboardInterrupt:
+        pass
+    except Exception, e:
+        log.error("Unknown error: %s" % e)
+    finally:
         sys.exit(0)
 
 def run(config):
@@ -61,6 +65,7 @@ def run(config):
 
         if not pull_requests:
             log.info("No work to do, sleeping.")
+            # todo(chris): Make this configurable. config.default_no_work_time
             time.sleep(30)
             continue
 
@@ -97,16 +102,13 @@ def run(config):
                 # push up a test branch
                 git.push("master", remote_branch=git.local_branch_name)
 
-                build = hudson.Job.spawn_build(git.local_branch_name, config)
-                while not build.complete:
-                    log.info("Job not complete, sleeping for 30 seconds...")
-                    time.sleep(30)
-                    build.reload()
+                with ci.job.Job.spawn(git.local_branch_name, config) as job:
+                    while not job.complete:
+                        job.reload()
 
-                if build:
-                    # Successful build, good coverage, and clean pylint.
-                    git.push("master")
-                    pull_request.close(git_client.BUILD_SUCCESS_MSG)
-                else:
-                    pull_request.close(
-                        git_client.BUILD_FAIL_MSG % build.url)
+                    if job:
+                        # Successful build, good coverage, and clean pylint.
+                        git.push("master")
+                        pull_request.close(git_client.BUILD_SUCCESS_MSG)
+                    else:
+                        pull_request.close(git_client.BUILD_FAIL_MSG % job.url)

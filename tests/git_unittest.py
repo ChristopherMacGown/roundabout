@@ -46,7 +46,6 @@ class GitTestCase(utils.TestHelper):
 
         curdir = os.getcwd()
         os.chdir(self.repo.clonepath)
-        print self.repo.clonepath
 
         with open("testfile", "w") as test:
             test.write("this is just a test")

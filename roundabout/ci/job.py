@@ -12,6 +12,7 @@ class JobException(Exception):
 
 JOB_CLASSES = {}
 def get_ci_class(name):
+    """CI class factory."""
     try:
         return JOB_CLASSES[name]
     except KeyError:
@@ -31,7 +32,7 @@ class Job(object):
     def __enter__(self):
         return self
 
-    def __exit__(self):
+    def __exit__(self, *args):
         pass
 
     def reload(self):
@@ -39,8 +40,7 @@ class Job(object):
         data for the job.
         """
         log.info("Job not complete, sleeping for 30 seconds...")
-        # todo(chris): make this sleep configurable.
-        time.sleep(30)
+        time.sleep(self.config["ci"].get("lazy_time", 30))
 
     @property
     def url(self):
@@ -53,19 +53,20 @@ class Job(object):
         """Whether or not the job is complete."""
         raise NotImplementedError("Descendent classes should implement this")
 
-    @staticmethod
-    def spawn(branch, config, opener=None):
+    @classmethod
+    def spawn(cls, branch, config, opener=None):
         """
         Create and return a paramaterized Job based on the CI config.
         """
 
-        cls = get_ci_class(config["ci"]["class"])
+        ci_class = get_ci_class(config["ci"]["class"])
         log.info("Starting %s job" % config["ci"]["class"])
 
-        return cls.spawn(branch, config, opener)
+        return ci_class.spawn(branch, config, opener)
 
     @classmethod
     def register(cls, name, job_class):
+        """Register a CI class."""
         if not issubclass(job_class, cls):
             raise JobException("Cannot register %s, not a Job" % job_class)
 

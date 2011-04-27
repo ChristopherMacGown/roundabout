@@ -56,7 +56,7 @@ class Daemon(object):
         sys.stderr = os.open(self.stdout, os.O_WRONLY)
         sys.stdout = os.open(self.stderr, os.O_WRONLY)
 
-    def remove_pidfile(self, *args):
+    def remove_pidfile(self, *args): #pylint: disable=W0613
         """ Remove the pidfile """
         os.unlink(self.pidfile)
 
@@ -65,6 +65,7 @@ class Daemon(object):
         signal.signal(signal.SIGTERM, self.remove_pidfile)
 
     def restart(self):
+        """Stop and then start the daemon."""
         self.stop()
         self.start()
 
@@ -85,7 +86,7 @@ class Daemon(object):
                 try:
                     os.kill(int(pid), signal.SIGTERM)
                     log.info("Done...")
-                except ValueError, e:
+                except ValueError:
                     log.info("Couldn't stop roundabout...")
                     return None
         except (IOError, OSError):

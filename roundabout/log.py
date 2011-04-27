@@ -9,6 +9,8 @@ LOGGER = logging.getLogger(name="roundabout")
 
 
 def init_logger(config, stream=False):
+    """Initialize the logger."""
+
     log_file = config["default"]["logfile"]
     log_level = config["default"].get("log_level", logging.DEBUG)
 

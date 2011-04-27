@@ -1,7 +1,10 @@
+""" A single build for a Hudson/Jenkins Job """
+
 class Build(object):
+    """ A single build for a Hudson/Jenkins Job """
+
     #pylint: disable=E1101
 
-    """ A single build for a Hudson/Jenkins Job """
     def __init__(self, job, _dict):
         self.__dict__ = _dict
         self.job = job

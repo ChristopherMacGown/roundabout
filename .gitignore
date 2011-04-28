@@ -2,3 +2,4 @@ roundabout.cfg
 roundabout.log
 *.pyc
 .coverage
+tests/data/test_repo

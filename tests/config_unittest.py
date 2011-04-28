@@ -8,6 +8,7 @@ from tests import utils
 class ConfigTestCase(utils.TestHelper):
     _test_bad_config_file = utils.testdata("bad.cfg")
     _test_good_config_file = utils.testdata("good.cfg")
+    _test_horrible_config_file = utils.testdata("horrible.cfg")
 
     def setUp(self):
         self.t = time.time()
@@ -15,23 +16,22 @@ class ConfigTestCase(utils.TestHelper):
     def tearDown(self):
         print "%s: %f" % (self.id(), time.time() - self.t)
 
-    def test_that_underunder_getattr_returns_sanity(self):
+    def test_that_config_parsing_and_get_returns_sanity(self):
         config = Config(config_file=self._test_good_config_file)
-        self.assertEqual(config.__getattr__('nothing_here'), None)
-        self.assertEqual(config.__getattr__('nothing or here'), None)
-        self.assertEqual(config.__getattr__('test_attribute'), 12345)
-
+        self.assertTrue(config["github"])
+        self.assertEqual(config["github"]["req_per_second"], 1)
+        self.assertEqual(config["github"]["username"], "YOUR GITHUB USERNAME")
 
     def test_that_update_works(self):
-        config = Config(config_file=utils.testdata("fake.cfg"))
-        self.assertCalled(json.dump, config.update, 'test_attribute', 100)
-
-    def test_that_parsing_works(self):
-        config = Config(config_file=self._test_good_config_file)
-        self.assertTrue(config.test_attribute)
-        self.assertFalse(config.test_false_attribute)
+        config = Config(config_file=utils.testdata("good.cfg"))
+        self.assertCalled(json.dump, config.update, "pylint","max_score", 10000)
 
     def test_raises_config_error_on_bad_parse(self):
         self.assertRaises(ConfigError, Config, config_file=None)
         self.assertRaises(ConfigError, Config,
+                          config_file=self._test_horrible_config_file)
+
+    def test_raises_config_error_on_improper_configuration(self):
+        self.assertRaises(ConfigError, Config, 
                           config_file=self._test_bad_config_file)
+

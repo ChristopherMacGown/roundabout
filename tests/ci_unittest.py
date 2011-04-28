@@ -142,5 +142,12 @@ class HudsonTestCase(utils.TestHelper):
         time.sleep = old_sleep
 
     def test_get_job_data(self):
-        job = ci.hudson.job.Job(self.config)
+        class FakeCI(FakeCIOpener):
+            __expected__ = {'nextBuildNumber': 10,
+                            'builds': [{'number': 10, 
+                                        'building': False,
+                                        'result': "SUCCESS",
+                                        'url': 'http://fakeurl'}]}
+
+        job = ci.hudson.job.Job(self.config, opener=FakeCI)
         self.assertTrue(job.properties)

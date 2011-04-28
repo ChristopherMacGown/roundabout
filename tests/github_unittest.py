@@ -70,13 +70,13 @@ class GithubClientTestCase(unittest.TestCase):
 
     def test_github_pull_requests(self):
         client = StubbedGithub(config=self.config, conn_class=FakeGithub)
-        client.config.github_core_team = "test team 1"
+        client.config["github"]["core_team"] = "test team 1"
         pull_requests = client.pull_requests
         self.assertTrue(pull_requests)
 
     def test_lgtm(self):
         client = StubbedGithub(config=self.config, conn_class=FakeGithub)
-        client.config.github_core_team = "test team 1"
+        client.config["github"]["core_team"] = "test team 1"
 
         def test_lgtm_without_reject():
             self.assertTrue([p for (url, p)
@@ -111,7 +111,7 @@ class GithubClientTestCase(unittest.TestCase):
 
     def test_github_approvers(self):
         client = StubbedGithub(config=self.config, conn_class=FakeGithub)
-        client.config.github_core_team = "test team 1"
+        client.config["github"]["core_team"] = "test team 1"
         self.assertTrue(u'larsbutler' in client.approvers)
 
     def test_github_approvers_with_bad_coreteam(self):
@@ -131,7 +131,7 @@ class GithubClientTestCase(unittest.TestCase):
                 self.__dict__ = dictionary
 
         client = StubbedGithub(config=self.config, conn_class=FakeGithub)
-        client.config.github_core_team = "test team 1"
+        client.config["github"]["core_team"] = "test team 1"
         pull_request = client.pull_requests.values()[0]
 
         test_issue_id = 12345
@@ -144,7 +144,7 @@ class GithubClientTestCase(unittest.TestCase):
         # now verify the comment was added 
         self.expect([Comment(x) for x 
             in utils.load(utils.testdata('comments.json'))["comments"]])
-        comments = self.client.github.issues.comments(self.config.github_repo,
+        comments = self.client.github.issues.comments(self.config["github"]["repo"],
                                                             test_issue_id)
         
         # filter the comments list by id
@@ -162,7 +162,7 @@ class GithubClientTestCase(unittest.TestCase):
                 self.__dict__ = dictionary
 
         def _get_issue(issue_id):
-            return self.client.github.issues.show(self.config.github_repo,
+            return self.client.github.issues.show(self.config["github"]["repo"],
                                                   issue_id)
 
         test_pr_id = 1
@@ -171,7 +171,7 @@ class GithubClientTestCase(unittest.TestCase):
         # TODO(LB): temporary -- repoen the pull request for this test
         # Remove this line once github mocking is in place
         self.expect(Issue(utils.load(utils.testdata('issue_open.json'))['issue']))
-        self.client.github.issues.reopen(self.config.github_repo,
+        self.client.github.issues.reopen(self.config["github"]["repo"],
                                          test_pr_id)
         # verify the issue is open
         issue = _get_issue(test_pr_id)

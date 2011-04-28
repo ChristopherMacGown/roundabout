@@ -34,10 +34,10 @@ class Git(object):
         self.config = config
 
         cn = "".join([choice(letters) for i in range(8)]) #pylint: disable=W0612
-        self.clonepath = os.path.join(config.git_local_repo_path, cn)
+        self.clonepath = os.path.join(config["git"]["local_repo_path"], cn)
         try:
-            self.repo = Repo.clone_from(config.git_base_repo_url,
-                                            self.clonepath)
+            self.repo = Repo.clone_from(config["git"]["base_repo_url"],
+                                        self.clonepath)
         except GitCommandError, e:
             raise GitException(e)
 

@@ -13,8 +13,8 @@ class Pylint(object):
         self.config = config
         self.path = path
         self.current_score = 0
-        self.previous_score = self.config.pylint_current_score
-        self.max_score = self.config.pylint_max_score
+        self.previous_score = self.config["pylint"]["current_score"]
+        self.max_score = self.config["pylint"]["max_score"]
 
     def __nonzero__(self):
         return self.__check_pylint()
@@ -29,7 +29,7 @@ class Pylint(object):
                                          os.path.join(self.path, 'pylintrc'),
                                          str.join(' ', list(self.modules))))
         messages = [message for message in results.read().splitlines()]
-        self.config.update('pylint_current_score', len(messages))
-        self.current_score = self.config.pylint_current_score
+        self.config.update('pylint', 'current_score', len(messages))
+        self.current_score = self.config["pylint"]["current_score"]
 
         return self.current_score <= self.previous_score <= self.max_score

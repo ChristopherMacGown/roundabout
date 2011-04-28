@@ -15,8 +15,10 @@ class Job(job.Job):
     def __init__(self, config, opener=None):
         super(Job, self).__init__(config, opener)
 
-        self.job_endpoint = "%s/job/%s/api/json?depth=1" % (config.ci_base_url,
-                                                            config.ci_job)
+        self.build = None
+        self.job_endpoint = "%s/job/%s/api/json?depth=1" % (
+                                    config["ci"]["base_url"],
+                                    config["ci"]["job"])
         self.build_endpoint = "%s/job/%s/buildWithParameters?branch=%s"
 
     def __nonzero__(self):
@@ -27,20 +29,21 @@ class Job(job.Job):
         """
         Create and return a paramaterized build of the current job
         """
-        job = cls(config, opener=opener)
-        log.info("Build starting: %s for %s" % (job.config.ci_job, branch))
 
-        if job.req(job.build_endpoint % (job.config.ci_base_url,
-                                         job.config.ci_job, branch)):
-            build_id = job.properties['nextBuildNumber']
+        _job = cls(config, opener=opener)
+        log.info("Building: %s for %s" % (_job.config["ci"]["job"], branch))
+
+        if _job.req(_job.build_endpoint % (_job.config["ci"]["base_url"],
+                                         _job.config["ci"]["job"], branch)):
+            build_id = _job.properties['nextBuildNumber']
             while True:
                 # Keep trying until we return something.
                 try:
-                    job.build = [b for b 
-                                   in job.builds
+                    _job.build = [b for b 
+                                   in _job.builds
                                    if build_id == b.number][0]
-                    log.info("Build URL: %s" % job.url)
-                    return job
+                    log.info("Build URL: %s" % _job.url)
+                    return _job
                 except IndexError:
                     time.sleep(1)
 
@@ -74,8 +77,8 @@ class Job(job.Job):
         Connect to remote url, using the provided credentials. Return either
         the result or if json_decode=True, the JSONDecoded result.
         """
-        username = self.config.ci_username
-        password = self.config.ci_password
+        username = self.config["ci"]["username"]
+        password = self.config["ci"]["password"]
         b64string = base64.encodestring("%s:%s" % (username, password))[:-1]
         req = urllib2.Request(url)
         req.add_header("Authorization", "Basic %s" % b64string)

@@ -3,3 +3,6 @@ roundabout.log
 *.pyc
 .coverage
 tests/data/test_repo
+dist/
+*.egg-info
+build/

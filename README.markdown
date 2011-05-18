@@ -21,7 +21,7 @@ Installation:
 
     $ git clone git://github.com/ChristopherMacGown/roundabout.git
     $ cd roundabout
-    $ cp roundabout{-example,}.cfg
+    $ cp roundabout.cfg{-example,}
     $ vi roundabout.cfg # SEE Configuration
     $ sudo python setup.py install
 

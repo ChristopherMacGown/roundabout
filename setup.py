@@ -4,7 +4,7 @@ from setuptools import find_packages
 setup(name='roundabout',
       version='0.8',
       description='roundabout ',
-      authors=['Christopher MacGown', 'Lars Butler'],
+      authors=['Christopher MacGown', 'Lars Butler', 'hub-cap'],
       author_email='roundabout-dev@googlegroups.com',
       url='',
       packages=['roundabout', 'roundabout/github', 'roundabout/ci', 'roundabout/ci/hudson'],

@@ -99,6 +99,11 @@ class PullRequest(object):
         """ Return the branch name for the requested merge branch. """
         return self.head['ref']
 
+    @property
+    def base_branch(self):
+        """Return the branch name for the requested merge branch."""
+        return self.base["ref"]
+
     def lgtm(self, approvers):
         """ 
         Takes a list of approvers and checks if any of the approvers have

@@ -135,7 +135,7 @@ Required packages:
 ==================
 
 * GitPython==0.3.1
-* github2>=0.2.0
+* github2>=0.4.1
 * pylint==0.22.0
 
 If you want to run the unittests:

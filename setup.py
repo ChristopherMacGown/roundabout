@@ -11,4 +11,4 @@ setup(name='roundabout',
       scripts = ['bin/roundabout'],
       data_files=[('/etc/roundabout', ['roundabout.cfg',
                                        'roundabout.cfg-example'])],
-      install_requires=["coverage", "nose", "github2", "gitpython", "pylint"])
+      install_requires=["coverage", "nose", "github2>=0.4.1", "gitpython", "pylint"])

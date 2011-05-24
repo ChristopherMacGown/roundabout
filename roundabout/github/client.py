@@ -91,13 +91,18 @@ class PullRequest(object):
 
     @property
     def remote_name(self):
-        """ Return the login of the branch owner """
+        """Return the login of the branch owner."""
         return self.head['repository']['owner']
 
     @property
     def remote_branch(self):
-        """ Return the branch name for the requested merge branch. """
+        """Return the branch name for the requested merge branch."""
         return self.head['ref']
+
+    @property
+    def base_branch(self):
+        """Return the base branch name for the requested merge branch."""
+        return self.base["ref"]
 
     def lgtm(self, approvers):
         """ 

@@ -42,7 +42,7 @@ def main(command, options):
     except KeyboardInterrupt:
         pass
     except Exception, e:
-        log.error("Unknown error: %s" % e)
+        log.error("Unknown error: %s" % str(e))
     finally:
         sys.exit(0)
 
@@ -60,7 +60,7 @@ def run(config):
                                     in pull_requests.items()
                                     if p.lgtm(github.approvers)]
         except RuntimeError, e:
-            log.error("Unexpected response from github:\n %s" % e.__str__())
+            log.error("Unexpected response from github:\n %s" % str(e))
             pull_requests = []
 
         if not pull_requests:
@@ -79,12 +79,13 @@ def run(config):
                                   config=config)
 
             # Create a remote, fetch it, checkout the branch
-
             with repo as git:
                 log.info("Cloning to %s" % repo.clonepath)
 
-                # Ensure we're on master
-                git.branch("master").checkout()
+                # Ensure we're on the requested branch for the pull_request.
+
+                base_branch = pull_request.base_branch
+                git.branch(base_branch).checkout()
                 try:
                     git.merge(git.remote_branch,
                               squash=config["git"].get("squash_merges"))
@@ -102,7 +103,7 @@ def run(config):
                         continue
 
                 # push up a test branch
-                git.push("master", remote_branch=git.local_branch_name)
+                git.push(base_branch, remote_branch=git.local_branch_name)
 
                 with ci.job.Job.spawn(git.local_branch_name, config) as job:
                     while not job.complete:
@@ -110,7 +111,7 @@ def run(config):
 
                     if job:
                         # Successful build, good coverage, and clean pylint.
-                        git.push("master")
+                        git.push(base_branch)
                         pull_request.close(git_client.BUILD_SUCCESS_MSG)
                     else:
                         pull_request.close(git_client.BUILD_FAIL_MSG % job.url)

@@ -65,9 +65,8 @@ def run(config):
 
         if not pull_requests:
             log.info("No work to do, sleeping.")
-            # todo(chris): Make this configurable.
-            # config["default"]["no_work_time"] or something
-            time.sleep(30)
+            sleeptime = int(config["default"].get("poll_sleep", 30))
+            time.sleep(sleeptime)
             continue
 
         for url, pull_request in pull_requests:

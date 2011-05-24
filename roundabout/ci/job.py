@@ -36,11 +36,12 @@ class Job(object):
         pass
 
     def reload(self):
-        """Sleep for 30 seconds, the descendent class should then reload the
-        data for the job.
+        """Sleep for configured time, the descendent class should then reload 
+        the data for the job.
         """
-        log.info("Job not complete, sleeping for 30 seconds...")
-        time.sleep(self.config["ci"].get("lazy_time", 30))
+        sleeptime = int(self.config["ci"].get("job_reload_sleep", 30))
+        log.info("Job not complete, sleeping for %s seconds..." % sleeptime)
+        time.sleep(sleeptime)
 
     @property
     def url(self):

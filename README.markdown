@@ -41,6 +41,8 @@ sections:
 ### use_merge_tag: string
   A *future* configuration option that will use the existence of a tag in addition
   to the minimum lgtms to determine if a pull_request should be processed.
+### poll_sleep: integer
+  The sleep time for github pull request polling intervals. Defaults to 30 seconds.
 
 ## ci
 ### class: string
@@ -60,6 +62,8 @@ sections:
   should probably change to something more generic.
 ### base_url: string
   The base URL for the CI instance. For example: http://hudson.atomicpony.com
+### job_reload_sleep: integer
+  The sleep time between CI build status verification. Defaults to 30 seconds.
 ## git
 ### squash_merges: boolean
   Whether or not you want roundabout to merge --squash or not. If false, the

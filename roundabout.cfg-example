@@ -1,14 +1,16 @@
 {
     "default": {
         "logfile": "roundabout.log", 
-        "lgtm": "lgtm"
+        "lgtm": "lgtm",
+        "poll_sleep": 60
     }, 
     "ci": {
         "class": "YOUR CI INSTANCE (currently: hudson or jenkins)",
         "username": "HUDSON USERNAME", 
         "job": "JOB", 
         "password": "HUDSON PASSWORD", 
-        "base_url": "YOUR HUDSON INSTANCE"
+        "base_url": "YOUR HUDSON INSTANCE",
+        "job_reload_sleep": 300
     }, 
     "git": {
         "squash_merges": true,

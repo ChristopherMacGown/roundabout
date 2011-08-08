@@ -23,7 +23,9 @@
         "api_token": "YOUR GITHUB API TOKEN", 
         "organization": "YOUR ORG", 
         "core_team": "YOUR CORE TEAM", 
-        "req_per_second": 1
+        "req_per_second": 1,
+        "http_proxy_host": "your.http.proxy.com",
+        "http_proxy_port": 8080
     },
     "pylint": {
         "modules": ["YOUR PYLINT MODULES"],

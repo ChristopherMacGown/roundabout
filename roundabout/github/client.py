@@ -1,7 +1,10 @@
 """ A borg style github client """
 
+
 from __future__ import absolute_import
 import re
+import urlparse
+
 from github2.client import Github
 from roundabout import log
 
@@ -67,7 +70,10 @@ class Client(object):
     @property
     def pull_requests(self):
         """ Return the list of pull_requests from the repo. """
-        p_reqs = [PullRequest(self, p, self.config["default"]["lgtm"])
+        p_reqs = [PullRequest(self, p, self.config["default"]["lgtm"],
+                              username=self.config["github"]["username"],
+                              password=self.config["github"]["password"],
+                             )
                   for p
                   in self.get("pulls", self.config["github"]["repo"])['pulls']]
         return dict([(p.html_url, p) for p in p_reqs])
@@ -77,19 +83,33 @@ class PullRequest(object):
     #pylint: disable=E1101
     """ A github pull request """
 
-    def __init__(self, client, pull_request, lgtm_text):
+    def __init__(self, client, pull_request, lgtm_text, username=None, password=None):
         """ Take a pull_request dict from github, and builds a PullRequest """
 
         self.__dict__ = pull_request
         self.client = client
         self.lgtm_text = lgtm_text
+        self.username = username
+        self.password = password
 
         self.__dict__.update(self.__get_full_request())
 
     @property
     def remote_url(self):
         """ Return the remote URL from the repository dict. """
-        return self.head['repository']['url'] + ".git"
+        
+        remote_url = self.head['repository']['url'] + '.git'
+        remote_url = list(urlparse.urlparse(remote_url))
+
+        if self.username and self.password:
+            netloc = remote_url[1]
+            netloc_dict = {'username': self.username,
+                           'password': self.password,
+                           'netloc': netloc,}
+            netloc =  "%(username)s:%(password)s@%(netloc)s" % netloc_dict
+            remote_url[1] = netloc
+        
+        return urlparse.urlunparse(remote_url)
 
     @property
     def remote_name(self):

@@ -93,6 +93,7 @@ class Config(object):
 
         for key in OPTIONAL_KEYS.keys():
             if not key in self.__dict__.keys():
+                self.__dict__[key] = None
                 continue
             
             for sub_key in OPTIONAL_KEYS[key]:

@@ -26,7 +26,7 @@ def init_logger(config, stream=False):
 def write(message, level):
     """Write a message to the log at the specified level"""
     level("[%s] %s: %s" % (time.strftime("%d-%m-%Y %H:%M:%S"),
-                           level.__name__.upper(), message)) 
+                           level.__name__.upper(), message))
 
 
 def info(message):

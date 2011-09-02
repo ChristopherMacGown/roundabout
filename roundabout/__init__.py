@@ -18,7 +18,7 @@ def main(command, options):
 
     config_file = options.config_file or roundabout.config.DEFAULT
     config = roundabout.config.Config(config_file)
-    if command == "run": 
+    if command == "run":
         log.init_logger(config, stream=True)
     else:
         log.init_logger(config)
@@ -46,8 +46,9 @@ def main(command, options):
     finally:
         sys.exit(0)
 
+
 def run(config):
-    """ 
+    """
     Run roundabout forever or until you kill it.
     """
 

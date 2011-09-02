@@ -1,4 +1,4 @@
-"""The Roundabout CI abstract class/interface and individual CI implementations.
+"""The Roundabout CI abstract class/interface and individual CI implementations
 """
 
 import roundabout.ci.hudson

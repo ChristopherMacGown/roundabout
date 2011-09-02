@@ -18,6 +18,7 @@ def _fork(num):
     except OSError, e:
         sys.exit("Couldn't fork %i times: %s" % (num, e))
 
+
 def _decouple():
     """ Decouple the child from the parent """
     os.chdir('/')
@@ -26,7 +27,7 @@ def _decouple():
 
 
 class Daemon(object):
-    """ 
+    """
     Daemon class provides methods for starting and stopping a UNIX daemon.
     """
 
@@ -56,7 +57,7 @@ class Daemon(object):
         sys.stderr = os.open(self.stdout, os.O_WRONLY)
         sys.stdout = os.open(self.stderr, os.O_WRONLY)
 
-    def remove_pidfile(self, *args): #pylint: disable=W0613
+    def remove_pidfile(self, *args):  # pylint: disable=W0613
         """ Remove the pidfile """
         os.unlink(self.pidfile)
 

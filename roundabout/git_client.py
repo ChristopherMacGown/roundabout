@@ -2,11 +2,11 @@
 
 import git
 import os
+import random
 import shutil
+import string
 
-from git import Repo, GitCommandError #pylint: disable=E1101
-from random import choice
-from string import letters #pylint: disable=W0402
+from git import Repo, GitCommandError  # pylint: disable=E1101
 
 from roundabout import log
 
@@ -24,7 +24,7 @@ class GitException(BaseException):
 
 
 class Git(object):
-    """ Roundabout git package proxy """ 
+    """ Roundabout git package proxy """
 
     def __init__(self, remote_name, remote_url, remote_branch, config):
         self.remote_name = remote_name
@@ -33,7 +33,7 @@ class Git(object):
         self.remote_branch = "remotes/%s/%s" % (remote_name, remote_branch)
         self.config = config
 
-        cn = "".join([choice(letters) for i in range(8)]) #pylint: disable=W0612
+        cn = str.join('', [random.choice(string.letters) for i in range(8)])
         self.clonepath = os.path.join(config["git"]["local_repo_path"], cn)
         try:
             self.repo = Repo.clone_from(config["git"]["base_repo_url"],
@@ -68,7 +68,7 @@ class Git(object):
         """
         if self.local_branch_name == 'master':
             raise GitException("Attempted to delete your remote master!")
-        
+
         self.push(":%s" % self.local_branch_name)
         try:
             shutil.rmtree(self.clonepath)

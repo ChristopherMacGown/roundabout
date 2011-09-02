@@ -6,11 +6,12 @@ import urlparse
 from github2.client import Github
 from roundabout import log
 
+
 class Client(object):
     """ A borg style github client """
     __shared_state = {}
 
-    def __new__(cls, config, conn_class=Github): #pylint: disable=W0613
+    def __new__(cls, config, conn_class=Github):  # pylint: disable=W0613
         self = object.__new__(cls)
         self.__dict__ = cls.__shared_state
         return self
@@ -81,7 +82,8 @@ class PullRequest(object):
     #pylint: disable=E1101
     """ A github pull request """
 
-    def __init__(self, client, pull_request, lgtm_text, username=None, password=None):
+    def __init__(self, client, pull_request, lgtm_text, username=None,
+                 password=None):
         """ Take a pull_request dict from github, and builds a PullRequest """
 
         self.__dict__ = pull_request
@@ -95,7 +97,7 @@ class PullRequest(object):
     @property
     def remote_url(self):
         """ Return the remote URL from the repository dict. """
-        
+
         remote_url = self.head['repository']['url'] + '.git'
         remote_url = list(urlparse.urlparse(remote_url))
 
@@ -103,10 +105,10 @@ class PullRequest(object):
             netloc = remote_url[1]
             netloc_dict = {'username': self.username,
                            'password': self.password,
-                           'netloc': netloc,}
-            netloc =  "%(username)s:%(password)s@%(netloc)s" % netloc_dict
+                           'netloc': netloc, }
+            netloc = "%(username)s:%(password)s@%(netloc)s" % netloc_dict
             remote_url[1] = netloc
-        
+
         return urlparse.urlunparse(remote_url)
 
     @property
@@ -125,14 +127,13 @@ class PullRequest(object):
         return self.base["ref"]
 
     def lgtm(self, approvers):
-        """ 
+        """
         Takes a list of approvers and checks if any of the approvers have
         "lgtmed" the request. Returns true if so, None otherwise.
         """
 
         lgtm_re = re.compile("^%s$" % self.lgtm_text, re.I)
         rejected_re = re.compile("rejecting")
-
 
         lgtms = []
         rejected = [c for c

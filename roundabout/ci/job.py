@@ -5,12 +5,15 @@ import urllib2
 
 from roundabout import log
 
+
+JOB_CLASSES = {}
+
+
 class JobException(Exception):
     """A Job Exception."""
     pass
 
 
-JOB_CLASSES = {}
 def get_ci_class(name):
     """CI class factory."""
     try:
@@ -24,7 +27,7 @@ class Job(object):
 
     def __init__(self, config, opener=None):
         self.config = config
-        self.opener = opener or urllib2.urlopen # Use a test opener or urllib2
+        self.opener = opener or urllib2.urlopen  # Use a test opener or urllib2
 
     def __nonzero__(self):
         raise NotImplementedError("Descendent classes should implement this")
@@ -36,7 +39,7 @@ class Job(object):
         pass
 
     def reload(self):
-        """Sleep for configured time, the descendent class should then reload 
+        """Sleep for configured time, the descendent class should then reload
         the data for the job.
         """
         sleeptime = int(self.config["ci"].get("job_reload_sleep", 30))

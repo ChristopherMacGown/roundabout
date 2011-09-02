@@ -2,7 +2,6 @@
 Utility functions for roundabout
 """
 
-
 import json
 import os
 import optparse
@@ -17,8 +16,6 @@ def option_parser():
     """
 
     usage_msg = "usage: %prog [options] (start|stop|restart|run|update_config)"
-
-
 
     parser = optparse.OptionParser(usage=usage_msg)
     parser.add_option("--config_file",

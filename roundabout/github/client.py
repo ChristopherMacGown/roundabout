@@ -71,8 +71,8 @@ class Client(object):
     def pull_requests(self):
         """ Return the list of pull_requests from the repo. """
         p_reqs = [PullRequest(self, p, self.config["default"]["lgtm"],
-                              username=self.config["github"]["username"],
-                              password=self.config["github"]["password"],
+                              username=self.config["github"].get("username"),
+                              password=self.config["github"].get("password"),
                              )
                   for p
                   in self.get("pulls", self.config["github"]["repo"])['pulls']]

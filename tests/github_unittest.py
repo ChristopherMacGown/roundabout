@@ -12,7 +12,8 @@ from tests import utils
 class FakeGithub(object):
     """ This fakes out the github2.Github
     """
-    def __init__(self, username=None, api_token=None, requests_per_second=None):
+    def __init__(self, username=None, api_token=None, requests_per_second=None,
+                 proxy_host=None, proxy_port=None):
         self.expected_value = None
 
     def __call__(self, *args):
@@ -46,6 +47,7 @@ class GithubClientTestCase(unittest.TestCase):
     def setUp(self):
         self.t = time.time()
         self.config = Config(roundabout.config.DEFAULT)
+        print self.config
         self.client = Client(conn_class=FakeGithub,
                              config=self.config)
 

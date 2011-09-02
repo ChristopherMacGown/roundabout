@@ -9,6 +9,7 @@ class ConfigTestCase(utils.TestHelper):
     _test_bad_config_file = utils.testdata("bad.cfg")
     _test_good_config_file = utils.testdata("good.cfg")
     _test_horrible_config_file = utils.testdata("horrible.cfg")
+    _test_bad_optional_config_file = utils.testdata("bad_optional.cfg")
 
     def setUp(self):
         self.t = time.time()
@@ -35,3 +36,6 @@ class ConfigTestCase(utils.TestHelper):
         self.assertRaises(ConfigError, Config, 
                           config_file=self._test_bad_config_file)
 
+    def test_raises_config_error_on_bad_optional_config(self):
+        self.assertRaises(ConfigError, Config, 
+                          config_file=self._test_bad_optional_config_file)

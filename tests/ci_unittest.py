@@ -43,6 +43,12 @@ class CITestCase(utils.TestHelper):
         job = ci.job.Job(self.config)
         self.assertRaises(NotImplementedError, bool, job)
 
+    def test_raw_job_should_raise_on_url_or_complete(self):
+        job = ci.job.Job(self.config)
+
+        self.assertRaises(NotImplementedError, getattr, job, 'url')
+        self.assertRaises(NotImplementedError, getattr, job, 'complete')
+
     def test_reload_calls_sleep(self):
         class FakeCI(FakeCIOpener):
             __expected__ = {'nextBuildNumber': 10,
@@ -109,6 +115,7 @@ class HudsonTestCase(utils.TestHelper):
                                         'url': 'http://fakeurl'}]}
         job = ci.job.Job.spawn('test_branch', self.config, opener=FakeCI)
         self.assertFalse(job.build.complete)
+        self.assertFalse(job.complete)
         self.assertFalse(bool(job))
 
     def test_failed_build(self):

@@ -21,7 +21,7 @@ class Pylint(object):
 
     def __check_pylint(self):
         """
-        Call pylint and return whether or not the current pylint is no 
+        Call pylint and return whether or not the current pylint is no
         higher than the previous score or the maximum.
         """
 

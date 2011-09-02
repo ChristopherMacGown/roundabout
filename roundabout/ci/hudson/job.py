@@ -39,9 +39,9 @@ class Job(job.Job):
             while True:
                 # Keep trying until we return something.
                 try:
-                    _job.build = [b for b 
-                                   in _job.builds
-                                   if build_id == b.number][0]
+                    _job.build = [b for b
+                                    in _job.builds
+                                    if build_id == b.number][0]
                     log.info("Build URL: %s" % _job.url)
                     return _job
                 except IndexError:
@@ -83,7 +83,7 @@ class Job(job.Job):
         req = urllib2.Request(url)
         req.add_header("Authorization", "Basic %s" % b64string)
         res = self.opener(req)
-        
+
         if json_decode:
             res = json.loads(res.read())
 

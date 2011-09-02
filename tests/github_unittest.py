@@ -12,7 +12,8 @@ from tests import utils
 class FakeGithub(object):
     """ This fakes out the github2.Github
     """
-    def __init__(self, username=None, api_token=None, requests_per_second=None):
+    def __init__(self, username=None, api_token=None, requests_per_second=None,
+                 proxy_host=None, proxy_port=None):
         self.expected_value = None
 
     def __call__(self, *args):
@@ -46,6 +47,7 @@ class GithubClientTestCase(unittest.TestCase):
     def setUp(self):
         self.t = time.time()
         self.config = Config(roundabout.config.DEFAULT)
+        print self.config
         self.client = Client(conn_class=FakeGithub,
                              config=self.config)
 
@@ -73,6 +75,19 @@ class GithubClientTestCase(unittest.TestCase):
         client.config["github"]["core_team"] = "test team 1"
         pull_requests = client.pull_requests
         self.assertTrue(pull_requests)
+
+        for url, pull in pull_requests.items():
+            self.assertEqual("master", pull.remote_branch)
+            self.assertEqual("master", pull.base_branch)
+            self.assertEqual("larsbutler", pull.remote_name)
+            self.assertEqual("https://github.com/larsbutler/roundabout.git",
+                             pull.remote_url)
+
+            pull.username = "fake"
+            pull.password = "fake"
+
+            self.assertEqual("https://fake:fake@github.com/larsbutler/"
+                             "roundabout.git", pull.remote_url)
 
     def test_lgtm(self):
         client = StubbedGithub(config=self.config, conn_class=FakeGithub)

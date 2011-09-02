@@ -72,6 +72,24 @@ class GitTestCase(utils.TestHelper):
         self.assertTrue(self.repo.merge(branch, squash=True))
         os.chdir(curdir)
 
+    def test_clean_squash_merge_with_good_config_but_no_squash_message(self):
+        branch = self.repo.remote_branch
+        self.repo.repo.create_head(branch)
+        self.repo.branch(branch).checkout()
+
+        curdir = os.getcwd()
+        os.chdir(self.repo.clonepath)
+
+        with open("testfile", "w") as test:
+            test.write("this is just a test")
+        
+        self.repo.repo.git.execute(('git', 'add', 'testfile'))
+        self.repo.repo.git.execute(("git", "commit", "-m", "test_commit"))
+        self.repo.branch("master").checkout()
+        self.repo.clonepath="/i/am/a/fake/path/"
+        self.assertTrue(self.repo.merge(branch, squash=True))
+        os.chdir(curdir)
+
     def test_merge_fails_for_some_reason_should_raise(self):
         class FakeGit(git.Repo):
             """ A fake git class """
@@ -94,6 +112,7 @@ class GitTestCase(utils.TestHelper):
 
     def test_push_with_good_config(self):
         self.assertTrue(self.repo.push('master'))
+        self.assertTrue(self.repo.push('master', remote_branch='foo'))
 
     def test_cleanup_master_raises(self):
         self.repo.local_branch_name = 'master'

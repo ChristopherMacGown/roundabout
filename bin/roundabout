@@ -4,6 +4,7 @@ import sys
 
 import roundabout
 
+from roundabout import main
 from roundabout import utils
 
 
@@ -19,7 +20,7 @@ if __name__ == "__main__":
     if args[0] == "update_config":
         utils.update_config(options.config_file)
     elif args[0] in ["start", "stop", "restart", "run"]:
-        roundabout.main(args[0], options)
+        roundabout.main.main(args[0], options)
     else:
         optparser.error("Invalid argument")
         sys.exit(1)

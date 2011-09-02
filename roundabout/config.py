@@ -20,7 +20,7 @@ import re
 import json
 
 
-BAD_MANDATORY_MSG = "Bad mandatory configuration, expected '%s' %s." 
+BAD_MANDATORY_MSG = "Bad mandatory configuration, expected '%s' %s."
 BAD_OPT_MSG = "Bad optional config, expected %s for %s."
 DEFAULT = "roundabout.cfg"
 MANDATORY_KEYS = {
@@ -28,7 +28,7 @@ MANDATORY_KEYS = {
     "git": ["base_repo_url", "local_repo_path", "squash_merges"],
     "ci": ["class", "username", "password", "job", "base_url"],
     "github": ["username", "core_team", "repo",
-               "api_token", "organization", "req_per_second",],
+               "api_token", "organization", "req_per_second", ],
     }
 OPTIONAL_KEYS = {
     "pylint": ["modules", "max_score", "current_score"],
@@ -56,7 +56,7 @@ class Config(object):
                 self.__dict__.update(json.load(fp))
         except (TypeError, ValueError, IOError):
             pass
-    
+
         self.validate()
         self.config_file = config_file
 
@@ -76,13 +76,13 @@ class Config(object):
 
     def validate(self):
         """Walk the configuration and make sure that it has all the expected
-        mandatory keys, and for any optional config that it has all the expected
-        keys for that.
+        mandatory keys, and for any optional config that it has all the
+        expected keys for that.
         """
 
         if not self.__dict__:
             raise ConfigError("Didn't find configuration files, bailing.")
-        
+
         for key in MANDATORY_KEYS.keys():
             if not key in self.__dict__.keys():
                 raise ConfigError(BAD_MANDATORY_MSG % (key, ""))
@@ -95,7 +95,7 @@ class Config(object):
             if not key in self.__dict__.keys():
                 self.__dict__[key] = None
                 continue
-            
+
             for sub_key in OPTIONAL_KEYS[key]:
                 if not sub_key in self.__dict__[key]:
                     # NOTE(chris): Should this delete the optional config?

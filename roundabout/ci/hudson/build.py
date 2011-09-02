@@ -1,8 +1,9 @@
 """ A single build for a Hudson/Jenkins Job """
 
+
 class Build(object):
     """ A single build for a Hudson/Jenkins Job """
-    #pylint: disable=E1101
+    # pylint: disable=E1101
 
     def __init__(self, job, _dict):
         self.__dict__ = _dict
@@ -23,6 +24,6 @@ class Build(object):
 
     def reload(self):
         """ Reload the build. """
-        self.__dict__ = [b.__dict__ for b in self.job.builds 
+        self.__dict__ = [b.__dict__ for b in self.job.builds
                                           if b.number == self.number][0]
         return self

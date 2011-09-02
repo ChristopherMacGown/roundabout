@@ -76,6 +76,19 @@ class GithubClientTestCase(unittest.TestCase):
         pull_requests = client.pull_requests
         self.assertTrue(pull_requests)
 
+        for url, pull in pull_requests.items():
+            self.assertEqual("master", pull.remote_branch)
+            self.assertEqual("master", pull.base_branch)
+            self.assertEqual("larsbutler", pull.remote_name)
+            self.assertEqual("https://github.com/larsbutler/roundabout.git",
+                             pull.remote_url)
+
+            pull.username = "fake"
+            pull.password = "fake"
+
+            self.assertEqual("https://fake:fake@github.com/larsbutler/"
+                             "roundabout.git", pull.remote_url)
+
     def test_lgtm(self):
         client = StubbedGithub(config=self.config, conn_class=FakeGithub)
         client.config["github"]["core_team"] = "test team 1"

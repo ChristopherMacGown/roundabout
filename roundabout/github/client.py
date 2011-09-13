@@ -3,9 +3,8 @@
 import re
 import urlparse
 
-from github2.client import Github
 from roundabout import log
-
+from github2.client import Github
 
 class Client(object):
     """ A borg style github client """
@@ -132,7 +131,7 @@ class PullRequest(object):
         "lgtmed" the request. Returns true if so, None otherwise.
         """
 
-        lgtm_re = re.compile("^%s$" % self.lgtm_text, re.I)
+        lgtm_re = re.compile("^%s$" % re.escape(self.lgtm_text), re.I)
         rejected_re = re.compile("rejecting")
 
         lgtms = []

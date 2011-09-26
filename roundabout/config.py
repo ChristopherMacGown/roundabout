@@ -54,7 +54,7 @@ class Config(object):
         try:
             with open(config_file) as fp:
                 self.__dict__.update(json.load(fp))
-        except (TypeError, ValueError, IOError):
+        except (TypeError, IOError):
             pass
 
         self.validate()

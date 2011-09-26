@@ -30,6 +30,7 @@
     "pylint": {
         "modules": ["YOUR PYLINT MODULES"],
         "current_score": 100,
-        "max_score": 100000
+        "max_score": 100000,
+	"pylintrc-path": "pylintrc"
     }
 }

@@ -25,6 +25,11 @@ class Pylint(object):
         higher than the previous score or the maximum.
         """
 
+        if 'pylintrc_path' in self.config["pylint"]:
+            pylint_path = os.path.join( self.path, self.config["pylint"]["pylintrc_path"] )
+        else:
+            pylint_path = os.path.join( self.path, 'pylintrc' )
+
         results = os.popen(PYLINT_CMD % (self.path,
                                          os.path.join(self.path, 'pylintrc'),
                                          str.join(' ', list(self.modules))))

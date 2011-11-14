@@ -59,7 +59,7 @@ def run(config):
             pull_requests = github.pull_requests
             pull_requests = [(u, p) for u, p
                                     in pull_requests.items()
-                                    if p.lgtm(github.approvers)]
+                                    if p.looks_good_to_a_human(github.approvers)]
         except RuntimeError, e:
             log.error("Unexpected response from github:\n %s" % str(e))
             pull_requests = []

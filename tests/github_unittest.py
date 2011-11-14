@@ -96,7 +96,7 @@ class GithubClientTestCase(unittest.TestCase):
         def test_lgtm_without_reject():
             self.assertTrue([p for (url, p)
                                in client.pull_requests.items()
-                               if p.lgtm(client.approvers)])
+                               if p.looks_good_to_a_human(client.approvers)])
 
         def test_no_lgtm_after_reject_should_fail():
             client.pull_request_files = ("unlgtmed_pull_requests_with_rej.json", 
@@ -106,7 +106,7 @@ class GithubClientTestCase(unittest.TestCase):
 
             self.assertFalse([p for (url, p)
                                 in client.pull_requests.items()
-                                if p.lgtm(client.approvers)])
+                                if p.looks_good_to_a_human(client.approvers)])
 
 
         def test_lgtm_after_reject():
@@ -117,7 +117,7 @@ class GithubClientTestCase(unittest.TestCase):
 
             self.assertTrue([p for (url, p)
                                in client.pull_requests.items()
-                               if p.lgtm(client.approvers)])
+                               if p.looks_good_to_a_human(client.approvers)])
 
         test_lgtm_without_reject()
         test_no_lgtm_after_reject_should_fail()

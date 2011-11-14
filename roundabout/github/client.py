@@ -82,7 +82,7 @@ class PullRequest(object):
     """ A github pull request """
 
     def __init__(self, client, pull_request, lgtm_text, username=None,
-                 password=None):
+                 password=None, robot_lgtm_text=None):
         """ Take a pull_request dict from github, and builds a PullRequest """
 
         self.__dict__ = pull_request
@@ -90,6 +90,7 @@ class PullRequest(object):
         self.lgtm_text = lgtm_text
         self.username = username
         self.password = password
+        self.robot_lgtm_text = robot_lgtm_text
 
         self.__dict__.update(self.__get_full_request())
 
@@ -125,7 +126,27 @@ class PullRequest(object):
         """Return the base branch name for the requested merge branch."""
         return self.base["ref"]
 
-    def lgtm(self, approvers):
+    @property
+    def looks_good_to_a_robot(self, ci_github_user):
+        """
+        verifies if it's passed the first round of CI test-running, pre-merge.
+        
+        returns true if so, None otherwise.
+        """
+
+        lgtm_re = re.compile("^%s$" % re.escape(self.robot_lgtm_text), re.I)
+
+        for comment in self.discussion:
+            try:
+                if comment['user']['login'] == ci_github_user and \
+                   lgtm_re.match(comment.get('body', "")):
+                    return True
+            except TypeError:
+                continue
+
+        return None
+
+    def looks_good_to_a_human(self, approvers):
         """
         Takes a list of approvers and checks if any of the approvers have
         "lgtmed" the request. Returns true if so, None otherwise.

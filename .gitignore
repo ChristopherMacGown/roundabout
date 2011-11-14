@@ -2,6 +2,7 @@ roundabout.cfg
 roundabout.log
 *.pyc
 .coverage
+rebuild
 tests/data/test_repo
 dist/
 *.egg-info

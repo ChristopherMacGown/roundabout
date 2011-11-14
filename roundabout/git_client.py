@@ -15,6 +15,8 @@ BUILD_FAIL_MSG = "Build failed, rejecting.\n\n%s"
 MERGE_FAIL_MSG = "Merge failed, rejecting.\n\n%s"
 BUILD_SUCCESS_MSG = "Build successful! Merged!"
 
+PREMERGE_FAIL_MSG = "Premerge CI run failed.  Did you actually run tests locally?"
+PREMERGE_SUCCESS_MSG = "Premerge CI run successful!  Moving to Merge step..."
 
 class GitException(BaseException):
     """ Roundabout git exceptions """

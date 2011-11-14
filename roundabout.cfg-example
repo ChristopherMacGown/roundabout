@@ -2,7 +2,8 @@
     "default": {
         "logfile": "roundabout.log", 
         "lgtm": "lgtm",
-        "poll_sleep": 60
+        "poll_sleep": 60,
+        "pre-merge_ci_step": False
     }, 
     "ci": {
         "class": "YOUR CI INSTANCE (currently: hudson or jenkins)",

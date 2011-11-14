@@ -89,6 +89,31 @@ class GithubClientTestCase(unittest.TestCase):
             self.assertEqual("https://fake:fake@github.com/larsbutler/"
                              "roundabout.git", pull.remote_url)
 
+    def test_lgt_robots(self):
+        client = StubbedGithub(config=self.config, conn_class=FakeGithub)
+        client.config["github"]["username"] = "Bender B. Rodriguez"
+        client.config["default"]["premerge_robo_lgtm"] = "ROBOTICALLY APPROVED PRE-MERGE. BEEP BOOP."
+
+        def test_with_robotic_approval():
+            self.assertTrue([p for (url, p)
+                               in client.pull_requests.items()
+                               if p.looks_good_to_a_robot("Bender B. Rodriguez")])
+
+        def test_without_robotic_approval():
+            self.assertFalse([p for (url, p)
+                               in client.pull_requests.items()
+                               if p.looks_good_to_a_robot("Phillip J. Fry (Who is not a robot)")])
+        
+        def test_with_robots_saying_irrelevant_things():
+            client.config["default"]["premerge_robo_lgtm"] = "This is not the pre-merge robo-shibboleth."
+            self.assertTrue([p for (url, p)
+                               in client.pull_requests.items()
+                               if p.looks_good_to_a_robot("Bender B. Rodriguez")])
+
+        test_with_robotic_approval()
+        test_without_robotic_approval()
+
+
     def test_lgtm(self):
         client = StubbedGithub(config=self.config, conn_class=FakeGithub)
         client.config["github"]["core_team"] = "test team 1"

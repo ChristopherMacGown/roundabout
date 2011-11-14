@@ -71,6 +71,8 @@ class Client(object):
         p_reqs = [PullRequest(self, p, self.config["default"]["lgtm"],
                               username=self.config["github"].get("username"),
                               password=self.config["github"].get("password"),
+                              robot_lgtm_text=self.config["default"].
+                                    get("premerge_robo_lgtm",None)
                              )
                   for p
                   in self.get("pulls", self.config["github"]["repo"])['pulls']]
@@ -126,13 +128,15 @@ class PullRequest(object):
         """Return the base branch name for the requested merge branch."""
         return self.base["ref"]
 
-    @property
     def looks_good_to_a_robot(self, ci_github_user):
         """
         verifies if it's passed the first round of CI test-running, pre-merge.
         
         returns true if so, None otherwise.
         """
+        
+        if not self.robot_lgtm_text:
+            return None
 
         lgtm_re = re.compile("^%s$" % re.escape(self.robot_lgtm_text), re.I)
 

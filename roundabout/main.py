@@ -47,6 +47,68 @@ def main(command, options):
         sys.exit(0)
 
 
+def do_post_merge_tasks(config, github):
+    try:
+        pull_requests = github.pull_requests
+        pull_requests = [(u, p) for u, p
+                                in pull_requests.items()
+                                if p.looks_good_to_a_human(github.approvers)]
+    except RuntimeError, e:
+        log.error("Unexpected response from github:\n %s" % str(e))
+        pull_requests = []
+
+    if not pull_requests:
+        log.info("No work to do, sleeping.")
+        sleeptime = int(config["default"].get("poll_sleep", 30))
+        time.sleep(sleeptime)
+        return
+
+    for url, pull_request in pull_requests:
+        log.info("processing %s" % url)
+
+        repo = git_client.Git(remote_name=pull_request.remote_name,
+                              remote_url=pull_request.remote_url,
+                              remote_branch=pull_request.remote_branch,
+                              config=config)
+
+        # Create a remote, fetch it, checkout the branch
+        with repo as git:
+            log.info("Cloning to %s" % repo.clonepath)
+
+            # Ensure we're on the requested branch for the pull_request.
+
+            base_branch = pull_request.base_branch
+            git.branch(base_branch).checkout()
+            try:
+                git.merge(git.remote_branch,
+                          squash=config["git"].get("squash_merges"))
+            except git_client.GitException, e:
+                pull_request.close(git_client.MERGE_FAIL_MSG % e)
+                return 
+
+            if config["pylint"]:
+                py_res = pylint.Pylint(config["pylint"]["modules"],
+                                       config=config, path=repo.clonepath)
+                if not py_res:
+                    pull_request.close(
+                        pylint.PYLINT_FAIL_MSG % (py_res.previous_score,
+                                                  py_res.current_score))
+                    return 
+
+            # push up a test branch
+            git.push(base_branch, remote_branch=git.local_branch_name)
+
+            with ci.job.Job.spawn(git.local_branch_name, config) as job:
+                while not job.complete:
+                    job.reload()
+
+                if job:
+                    # Successful build, good coverage, and clean pylint.
+                    git.push(base_branch)
+                    pull_request.close(git_client.BUILD_SUCCESS_MSG)
+                else:
+                    pull_request.close(git_client.BUILD_FAIL_MSG % job.url)
+
 def run(config):
     """
     Run roundabout forever or until you kill it.
@@ -54,64 +116,6 @@ def run(config):
 
     while True:
         github = roundabout.github.client.Client(config)
+        do_post_merge_tasks(config, github)
 
-        try:
-            pull_requests = github.pull_requests
-            pull_requests = [(u, p) for u, p
-                                    in pull_requests.items()
-                                    if p.looks_good_to_a_human(github.approvers)]
-        except RuntimeError, e:
-            log.error("Unexpected response from github:\n %s" % str(e))
-            pull_requests = []
 
-        if not pull_requests:
-            log.info("No work to do, sleeping.")
-            sleeptime = int(config["default"].get("poll_sleep", 30))
-            time.sleep(sleeptime)
-            continue
-
-        for url, pull_request in pull_requests:
-            log.info("processing %s" % url)
-
-            repo = git_client.Git(remote_name=pull_request.remote_name,
-                                  remote_url=pull_request.remote_url,
-                                  remote_branch=pull_request.remote_branch,
-                                  config=config)
-
-            # Create a remote, fetch it, checkout the branch
-            with repo as git:
-                log.info("Cloning to %s" % repo.clonepath)
-
-                # Ensure we're on the requested branch for the pull_request.
-
-                base_branch = pull_request.base_branch
-                git.branch(base_branch).checkout()
-                try:
-                    git.merge(git.remote_branch,
-                              squash=config["git"].get("squash_merges"))
-                except git_client.GitException, e:
-                    pull_request.close(git_client.MERGE_FAIL_MSG % e)
-                    continue
-
-                if config["pylint"]:
-                    py_res = pylint.Pylint(config["pylint"]["modules"],
-                                           config=config, path=repo.clonepath)
-                    if not py_res:
-                        pull_request.close(
-                            pylint.PYLINT_FAIL_MSG % (py_res.previous_score,
-                                                      py_res.current_score))
-                        continue
-
-                # push up a test branch
-                git.push(base_branch, remote_branch=git.local_branch_name)
-
-                with ci.job.Job.spawn(git.local_branch_name, config) as job:
-                    while not job.complete:
-                        job.reload()
-
-                    if job:
-                        # Successful build, good coverage, and clean pylint.
-                        git.push(base_branch)
-                        pull_request.close(git_client.BUILD_SUCCESS_MSG)
-                    else:
-                        pull_request.close(git_client.BUILD_FAIL_MSG % job.url)

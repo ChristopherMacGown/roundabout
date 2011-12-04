@@ -1,6 +1,7 @@
 roundabout.cfg
 roundabout.log
 *.pyc
+*.swp
 .coverage
 rebuild
 tests/data/test_repo

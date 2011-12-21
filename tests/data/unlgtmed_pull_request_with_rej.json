@@ -91,6 +91,21 @@
             }
         }, 
         {
+            "body": "ROBOTICALLY APPROVED PRE-MERGE. BEEP BOOP.",
+            "created_at": "2011/01/23 13:05:01 -0800", 
+            "gravatar_id": "4174216c1dc0f223ce608d5a3b66a585",
+            "id": 700994,
+            "type": "IssueComment",
+            "updated_at": "2011/01/23 13:07:49 -0800",
+            "user": {
+                "email": "",
+                "gravatar_id": "4174216c1dc0f223ce608d5a3b66a585",
+                "login": "Bender B. Rodriguez",
+                "name": "Bender B. Rodriguez",
+                "type": "User"
+            }
+        },
+        {
             "body": "LGTM", 
             "created_at": "2011/01/23 13:04:40 -0800", 
             "gravatar_id": "4174216c1dc0f223ce608d5a3b66a585", 

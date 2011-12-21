@@ -1,0 +1,6 @@
+#!/bin/bash
+
+sudo rm -rf /home/mcgrue/roundabout/build
+sudo python /home/mcgrue/roundabout/setup.py install 
+sudo cp /usr/local/bin/roundabout2 /usr/local/bin/roundabout
+

@@ -73,22 +73,31 @@ class Job(job.Job):
         return self.build.reload()
 
     def req(self, url, json_decode=False):
-        """
-        Connect to remote url, using the provided credentials. Return either
-        the result or if json_decode=True, the JSONDecoded result.
-        """
-        username = self.config["ci"]["username"]
-        password = self.config["ci"]["password"]
-        b64string = base64.encodestring("%s:%s" % (username, password))[:-1]
-        req = urllib2.Request(url)
-        req.add_header("Authorization", "Basic %s" % b64string)
-        res = self.opener(req)
+         """
+         Connect to remote url, using the provided credentials. Return either
+         the result or if json_decode=True, the JSONDecoded result.
+         """
+         username = self.config["ci"]["username"]
+         password = self.config["ci"]["password"]
+         b64string = base64.encodestring("%s:%s" % (username, password))[:-1]
+         req = urllib2.Request(url)
+         req.add_header("Authorization", "Basic %s" % b64string)
+ 
+         try:
+             res = self.opener(req)
+         except Exception as e:
+             contents = e.read()
+             log.error(contents) # http errors have content bodies... like servlet
+                                # container stacktraces. I'm looking at you, 
+                                # Jenkins... -grue
+             raise e
 
-        if json_decode:
-            res = json.loads(res.read())
+         if json_decode:
+             res = json.loads(res.read())
 
-        return res
+         return res
 
 
 job.Job.register('hudson', Job)
 job.Job.register('jenkins', Job)
+

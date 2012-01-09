@@ -1,5 +1,6 @@
 roundabout.cfg
 roundabout.log
+roundabout.pid
 *.pyc
 *.swp
 .coverage

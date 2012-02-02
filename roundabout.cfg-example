@@ -11,7 +11,9 @@
         "job": "JOB", 
         "password": "HUDSON PASSWORD", 
         "base_url": "YOUR HUDSON INSTANCE",
-        "job_reload_sleep": 300
+        "job_reload_sleep": 300,
+        "http_proxy": "your.http.proxy.com:8080",
+        "http_proxy_type": "http"
     }, 
     "git": {
         "squash_merges": true,

@@ -2,6 +2,7 @@
 
 import sys
 import time
+import traceback
 
 import roundabout.config
 import roundabout.daemon
@@ -43,6 +44,7 @@ def main(command, options):
         pass
     except Exception, e:
         log.error("Unknown error: %s" % str(e))
+        log.error(traceback.format_exc())
     finally:
         sys.exit(0)
 
